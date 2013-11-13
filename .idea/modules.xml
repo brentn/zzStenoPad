@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/StenoPad/StenoPad.iml" filepath="$PROJECT_DIR$/StenoPad/StenoPad.iml" />
+      <module fileurl="file://$PROJECT_DIR$/StenoPadProject.iml" filepath="$PROJECT_DIR$/StenoPadProject.iml" />
+      <module fileurl="file://$PROJECT_DIR$/StenoPadProject2.iml" filepath="$PROJECT_DIR$/StenoPadProject2.iml" />
+    </modules>
+  </component>
+</project>
+
