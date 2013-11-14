@@ -1,11 +1,9 @@
 package com.brentandjody.stenopad;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -17,7 +15,7 @@ import java.util.Set;
  */
 public class Stroke {
 
-    private static final String STOKE_DELIMITER="/";
+    //private static final String STOKE_DELIMITER="/";
     private static final Set<String> IMPLICIT_HYPHENS = new HashSet<String>() {{
         add("A-"); add("O-"); add("5-"); add("0-"); add("-E"); add("U"); add("*");
     }};
@@ -61,7 +59,7 @@ public class Stroke {
                     break;
                 default:
                     // these keys exist on both sides, or are invalid
-                    if ("STPR".contains(input.substring(i,1))) {
+                    if ("STPR".indexOf(input.charAt(i))>=0) {
                         if ((i < (input.length()-1)) && (input.charAt(i+1) == '-')) {
                             keys.add(input.charAt(i)+"-");
                             i++;
@@ -76,7 +74,8 @@ public class Stroke {
                     } // else invalid key
             }
         }
-        Stroke converted = new Stroke(new HashSet<String>(keys));
+        Set keyset = new HashSet<String>(keys);
+        Stroke converted = new Stroke(keyset);
         return converted.stroke;
     }
 
@@ -93,9 +92,13 @@ public class Stroke {
         stroke = constructStroke(convertNumbers(stroke_keys));
     }
 
+    public String rtfcre() {
+        return stroke;
+    }
+
     private List<String> convertNumbers(List<String> keys) {
         // convert appropriate letters to numbers if the stroke contains '#'
-        if ((keys==null) || (!keys.contains("#"))) return null;
+        if ((keys==null) || (!keys.contains("#"))) return keys;
         List<String> result = new LinkedList<String>();
         boolean numeral = false;
         for (String key : keys) {
@@ -113,6 +116,7 @@ public class Stroke {
     }
 
     private String constructStroke(List<String> chord) {
+        if (chord==null) return "";
         String result = "";
         String suffix = "";
         if (! Collections.disjoint(chord, IMPLICIT_HYPHENS)) {

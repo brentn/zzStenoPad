@@ -2,6 +2,9 @@ package com.brentandjody.stenopad;
 
 import android.test.AndroidTestCase;
 
+import java.util.HashSet;
+import java.util.Set;
+
 
 public class StrokeTest extends AndroidTestCase {
 
@@ -19,12 +22,12 @@ public class StrokeTest extends AndroidTestCase {
         assertEquals("TWEPBL", Stroke.normalize("TWEPBL"));
     }
 
-//
-//    def test_steno(self):
-//            self.assertEqual(Stroke(['S-']).rtfcre, 'S')
-//            self.assertEqual(Stroke(['S-', 'T-']).rtfcre, 'ST')
-//            self.assertEqual(Stroke(['T-', 'S-']).rtfcre, 'ST')
-//            self.assertEqual(Stroke(['-P', '-P']).rtfcre, '-P')
-//            self.assertEqual(Stroke(['-P', 'X-']).rtfcre, 'X-P')
+    public void testSteno() throws Exception {
+        assertEquals("S", new Stroke(new HashSet<String>() {{add("S-");}}).rtfcre());
+        assertEquals("ST", new Stroke(new HashSet<String>() {{add("S-"); add("T-");}}).rtfcre());
+        assertEquals("ST", new Stroke(new HashSet<String>() {{add("T-"); add("S-");}}).rtfcre());
+        assertEquals("-P", new Stroke(new HashSet<String>() {{add("-P"); add("-P");}}).rtfcre());
+        assertEquals("-P", new Stroke(new HashSet<String>() {{add("-P"); add("X-");}}).rtfcre());
+    }
 
 }
