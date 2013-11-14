@@ -3,16 +3,23 @@ package com.brentandjody.stenopad;
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.os.AsyncTask;
+import android.util.Log;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Arrays;
+import java.util.Collection;
 
+/* This is the main Steno Dictionary class
+ * which stores a dictionary of stroke / translation pairs
+ * and can efficiently do forward lookups
+ */
 
 public class StenoDictionary {
 
-    private static final String[] DICTIONARY_TYPES = {".json", ".rtf"};
+    private static final String[] DICTIONARY_TYPES = {".json"};
 
     private Dictionary<String> dictionary;
     private Context context;
@@ -61,8 +68,15 @@ public class StenoDictionary {
     }
 
     public String lookup(String key) {
+        // return null if not found
+        // and empty string if the result is ambiguous
+        if (isLoading()) {
+            Log.w("Lookup", "Called while dictionary loading");
+        }
         if (key.isEmpty()) return null;
         String result = dictionary.get(key);
+        if (result.isEmpty()) return null;
+        if (((Collection) dictionary.prefixMatch(key+"/")).size() > 0) return ""; //ambiguous
         return result;
     }
 

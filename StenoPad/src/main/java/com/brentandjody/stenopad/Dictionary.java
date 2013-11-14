@@ -7,9 +7,7 @@ import java.util.Queue;
 /**
  * Created by brent on 16/10/13.
  *
- *  Compilation:  javac Dictionary.java
- *  Execution:    java Dictionary < words.txt
- *
+ *  This is the data structure that holds the main Dictionary.
  *  Symbol table with string keys, implemented using a ternary search
  *  trie (TST).
  *
