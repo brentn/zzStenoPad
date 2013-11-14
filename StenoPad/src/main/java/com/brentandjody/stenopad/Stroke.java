@@ -1,6 +1,9 @@
 package com.brentandjody.stenopad;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Hashtable;
 import java.util.List;
 
 /**
@@ -38,3 +41,56 @@ public class Stroke {
         return normalized_strokes.toArray(result);
     }
 }
+
+private static final Hashtable<String,String> NUMBER_KEYS = new Hashtable<String, String>() {{
+    put("S-", "1-");
+    put("T-", "2-");
+    put("P-", "3-");
+    put("H-", "4-");
+    put("A-", "5-");
+    put("O-", "0-");
+    put("-F", "-6");
+    put("-P", "-7");
+    put("-L", "-8");
+    put("-T", "-9");
+}};
+    private List<String> convertNumbers(List<String> chord) {
+        List<String> result = new ArrayList<String>();
+        Boolean numeral = false;
+        for (String thisKey : chord) {
+            if (NUMBER_KEYS.containsKey(thisKey)) {
+                result.add(NUMBER_KEYS.get(thisKey));
+                numeral = true;
+            } else {
+                result.add(thisKey);
+            }
+        }
+        if (numeral) {
+            result.remove("#");
+        }
+        return result;
+
+    }
+
+    private String constructStroke(List<String> chord) {
+        String result = "";
+        String suffix = "";
+        if (! Collections.disjoint(chord, Arrays.asList("A-", "O-", "5-", "0-", "-E", "-U", "*"))) {
+            for (String key : chord) {
+                result += key.replace("-","");
+            }
+        } else {
+            for (String key : chord) {
+                if (key.equals("#") || key.charAt(key.length()-1) == '-') {
+                    result += key.replace("-", "");
+                }
+                if (key.charAt(0) == '-') {
+                    suffix += key.replace("-", "");
+                }
+            }
+            if (! suffix.isEmpty()) {
+                result += "-"+suffix;
+            }
+        }
+        return result;
+    }

@@ -23,7 +23,7 @@ public class StenoDictionary {
 
     private Dictionary<String> dictionary;
     private Context context;
-    private int longestStroke = 0;
+    //private int longestStroke = 0;
     private Boolean loading = false;
 
     public StenoDictionary(Context c) {
@@ -99,9 +99,9 @@ public class StenoDictionary {
                             stroke = fields[1];
                             translation = fields[3];
                             dictionary.put(stroke, translation);
-                            if (stroke.length() > longestStroke) {
-                                longestStroke = stroke.length();
-                            }
+//                            if (stroke.length() > longestStroke) {
+//                                longestStroke = stroke.length();
+//                            }
                         }
                     }
                     lines.close();
