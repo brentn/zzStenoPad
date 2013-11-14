@@ -5,21 +5,18 @@ import android.test.AndroidTestCase;
 
 public class StrokeTest extends AndroidTestCase {
 
-    private Stroke stroke;
 
     public void setUp() throws Exception {
         super.setUp();
-        stroke = new Stroke();
     }
 
     public void testNormalize() throws Exception {
-        Stroke stroke = new Stroke();
-        assertEquals("S", stroke.normalize("S")[0]);
-        assertEquals("S", stroke.normalize("S-")[0]);
-        assertEquals("ES", stroke.normalize("ES")[0]);
-        assertEquals("ES", stroke.normalize("-ES")[0]);
-        assertEquals("TWEPBL", stroke.normalize("TW-EPBL")[0]);
-        assertEquals("TWEPBL", stroke.normalize("TWEPBL")[0]);
+        assertEquals("S", Stroke.normalize("S"));
+        assertEquals("S", Stroke.normalize("S-"));
+        assertEquals("ES", Stroke.normalize("ES"));
+        assertEquals("ES", Stroke.normalize("-ES"));
+        assertEquals("TWEPBL", Stroke.normalize("TW-EPBL"));
+        assertEquals("TWEPBL", Stroke.normalize("TWEPBL"));
     }
 
 //
