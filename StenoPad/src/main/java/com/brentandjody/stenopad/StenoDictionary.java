@@ -14,13 +14,14 @@ public class StenoDictionary {
 
     private static final String[] DICTIONARY_TYPES = {".json", ".rtf"};
 
-    Dictionary dictionary;
-    Context context;
-    Boolean loading = false;
+    private Dictionary<String> dictionary;
+    private Context context;
+    private int longestStroke = 0;
+    private Boolean loading = false;
 
     public StenoDictionary(Context c) {
         context = c;
-        dictionary = new Dictionary();
+        dictionary = new Dictionary<String>();
     }
 
     public Boolean isLoading() {
@@ -28,7 +29,7 @@ public class StenoDictionary {
     }
 
     public void clear() {
-        dictionary = new Dictionary();
+        dictionary = new Dictionary<String>();
     }
 
     public int size() {
@@ -40,15 +41,15 @@ public class StenoDictionary {
         if (Arrays.asList(DICTIONARY_TYPES).contains(extension)) {
             try {
                 InputStream stream = context.getAssets().open(filename);
+                stream.close();
             } catch (IOException e) {
                 System.err.println("Dictionary File: "+filename+" could not be found");
             }
         } else {
-            filename=null;
             throw new IllegalArgumentException(extension + " is not an accepted dictionary format.");
         }
         loading = true;
-        new DictionaryLoader().execute(filename);
+        new JsonLoader().execute(filename);
     }
 
     private OnDictionaryLoadedListener onDictionaryLoadedListener;
@@ -59,7 +60,13 @@ public class StenoDictionary {
         onDictionaryLoadedListener = listener;
     }
 
-    private class DictionaryLoader extends AsyncTask<String, Integer, Long> {
+    public String lookup(String key) {
+        if (key.isEmpty()) return null;
+        String result = dictionary.get(key);
+        return result;
+    }
+
+    private class JsonLoader extends AsyncTask<String, Integer, Long> {
         protected Long doInBackground(String... filenames) {
             int count = filenames.length;
             String line, stroke, translation;
@@ -78,6 +85,9 @@ public class StenoDictionary {
                             stroke = fields[1];
                             translation = fields[3];
                             dictionary.put(stroke, translation);
+                            if (stroke.length() > longestStroke) {
+                                longestStroke = stroke.length();
+                            }
                         }
                     }
                     lines.close();

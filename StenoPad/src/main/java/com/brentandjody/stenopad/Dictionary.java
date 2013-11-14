@@ -16,7 +16,7 @@ import java.util.Queue;
  *  Remarks
  *  --------
  *    - can't use a key that is the empty string ""
- *    - adding duplicate key replaces the old value //TODO: test this
+ *    - adding duplicate key replaces the old value 
  *
  */
 
