@@ -1,6 +1,6 @@
 package com.brentandjody.stenopad;
 
-import android.test.AndroidTestCase;
+import android.test.AndroidTestCase;  //because this requires getContext()
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -13,7 +13,6 @@ public class TranslationTest extends AndroidTestCase {
 
     private StenoDictionary dictionary;
     private Stroke[] strokeResult;
-    private String[] rtfcreResult;
 
     public void setUp() throws Exception {
         super.setUp();

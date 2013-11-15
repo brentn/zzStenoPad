@@ -2,18 +2,17 @@ package com.brentandjody.stenopad;
 
 import android.test.AndroidTestCase;
 
-import junit.framework.TestCase;
 
 import java.util.LinkedList;
 import java.util.Queue;
 
 public class DictionaryTest extends AndroidTestCase {
 
-    private Dictionary dictionary;
+    private Dictionary<String> dictionary;
 
     public void setUp() throws Exception {
         super.setUp();
-        dictionary = new Dictionary();
+        dictionary = new Dictionary<String>();
     }
 
     public void testSize() throws Exception {
