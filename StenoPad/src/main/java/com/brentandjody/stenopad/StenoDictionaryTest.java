@@ -47,15 +47,35 @@ public class StenoDictionaryTest extends AndroidTestCase {
         dictionary.setOnDictionaryLoadedListener(new StenoDictionary.OnDictionaryLoadedListener() {
             @Override
             public void onDictionaryLoaded() {
-                assertTrue(dictionary.size() > 0);
+                int size = dictionary.size();
+                assertTrue(size > 0);
                 dictionary.clear();
                 assertEquals(0, dictionary.size());
             }
         });
     }
 
-    public void testLookup() throws Exception {
-//TODO:
+    public void testLoad2Dictionaries() throws Exception{
+        //TODO:
     }
+
+    public void testOverrideEntries() throws Exception{
+        //TODO:
+    }
+
+    public void testLookupAndForceLookup() throws Exception {
+        dictionary.load("test.json");
+        dictionary.setOnDictionaryLoadedListener(new StenoDictionary.OnDictionaryLoadedListener() {
+            @Override
+            public void onDictionaryLoaded() {
+                //TODO:
+            }
+        });
+    }
+
+    public void testLongestValidStroke() {
+        //TODO:
+    }
+
 
 }

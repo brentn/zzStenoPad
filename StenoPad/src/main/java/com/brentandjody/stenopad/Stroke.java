@@ -104,8 +104,8 @@ public class Stroke {
     }
 
     private String raw;
-    private String rtfcre;
-    private boolean isCorrection;
+    private final String rtfcre;
+    private final boolean isCorrection;
 
     public Stroke(Set<String> keys) {
         //sort and remove invalid and duplicate keys

@@ -22,7 +22,7 @@ public class StenoDictionary {
     private static final String[] DICTIONARY_TYPES = {".json"};
 
     private Dictionary<String> dictionary;
-    private Context context;
+    private final Context context;
     //private int longestStroke = 0;
     private Boolean loading = false;
 

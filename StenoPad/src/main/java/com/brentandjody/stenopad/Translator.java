@@ -14,7 +14,7 @@ public class Translator {
 
     private static final int HISTORY_SIZE = 50;
 
-    private StenoDictionary dictionary;
+    private final StenoDictionary dictionary;
     private Deque<Stroke> strokeQ;
     private LimitedSizeDeque<Translation> history;
 
@@ -102,7 +102,7 @@ public class Translator {
     }
 
     class LimitedSizeDeque<Value> extends LinkedBlockingDeque<Value> {
-        private int size_limit;
+        private final int size_limit;
 
         public LimitedSizeDeque(int size) {
             size_limit = size;

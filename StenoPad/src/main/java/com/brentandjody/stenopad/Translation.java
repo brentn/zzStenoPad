@@ -3,13 +3,13 @@ package com.brentandjody.stenopad;
 
 /**
  * Created by brent on  13/11/13.
- * This is the main translation class that converts a stream of strokes
- * into english text.
+ * This is the main translation class
+ * and represents a group of strokes, and the translation they represents
  */
 public class Translation {
 
-    private Stroke[] strokes;
-    private String english;
+    private final Stroke[] strokes;
+    private final String english;
     private String[] replaced;
     private int[] formatting;
 
