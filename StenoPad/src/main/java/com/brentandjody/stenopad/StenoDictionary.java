@@ -74,10 +74,35 @@ public class StenoDictionary {
             Log.w("Lookup", "Called while dictionary loading");
         }
         if (key.isEmpty()) return null;
-        String result = dictionary.get(key);
-        if (result.isEmpty()) return null;
         if (((Collection) dictionary.prefixMatch(key+"/")).size() > 0) return ""; //ambiguous
-        return result;
+        return dictionary.get(key);
+    }
+
+    public String forceLookup(String key) {
+        //return the english translation for this key (even if ambiguous)
+        //or null if not found found
+        // (this is the same as lookup, except it doesn't return "" for ambiguous entries
+        if (key == null || key.isEmpty()) return null;
+        return (dictionary.get(key));
+    }
+
+    public Stroke[] longestValidStroke(String outline) {
+        //returns outline, if it has a valid translation
+        //or the longest combination of strokes, starting from the beginning of outline, that has a valid translation
+        //or null
+        String stroke = dictionary.longestPrefixOf(outline);
+        while (!((stroke.contains("/"))) && (outlineContainsStroke(outline, stroke))) {
+            //remove the last stroke and try again
+            String newOutline = stroke.substring(0,stroke.lastIndexOf('/')-1);
+            stroke = dictionary.longestPrefixOf(newOutline);
+        }
+        if (! outlineContainsStroke(outline, stroke)) return null;
+        return Stroke.separate(stroke);
+    }
+
+    private boolean outlineContainsStroke(String outline, String stroke) {
+        //ensures stroke does not contain "partial" strokes  from outline
+        return ((outline+"/").contains(stroke+"/"));
     }
 
     private class JsonLoader extends AsyncTask<String, Integer, Long> {

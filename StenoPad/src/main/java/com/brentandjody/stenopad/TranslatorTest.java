@@ -1,8 +1,9 @@
 package com.brentandjody.stenopad;
 
-import junit.framework.TestCase;
+import android.test.AndroidTestCase;
 
-public class TranslatorTest extends TestCase {
+
+public class TranslatorTest extends AndroidTestCase {
     public void setUp() throws Exception {
         super.setUp();
 

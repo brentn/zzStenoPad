@@ -10,13 +10,12 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Stoke object
+ * Stoke object - represents a single steno stroke (ie, no "/")
  * represents a sequence of steno keys
  * Accepts only keys in STENO_KEYS and rejects everything else
  */
 public class Stroke {
 
-    private static final char STROKE_DELIMITER='/';
     private static final Set<String> IMPLICIT_HYPHENS = new HashSet<String>() {{
         add("A-"); add("O-"); add("5-"); add("0-"); add("-E"); add("U"); add("*");
     }};
@@ -32,15 +31,26 @@ public class Stroke {
     }};
 
     public static String combine(Stroke[] strokes) {
+        if (strokes == null || strokes.length == 0) return "";
         StringBuilder sb = new StringBuilder();
         for (Stroke s : strokes) {
             sb.append(s.rtfcre());
-            sb.append(STROKE_DELIMITER);
+            sb.append('/');
         }
-        if (sb.charAt(sb.length()-1) == STROKE_DELIMITER) {
+        if (sb.charAt(sb.length()-1) == '/') {
             sb.deleteCharAt((sb.length()-1));
         }
         return sb.toString();
+    }
+
+    public static Stroke[] separate(String outline) {
+        if (outline == null || outline.isEmpty()) return null;
+        List<Stroke> list = new LinkedList<Stroke>();
+        for (String s : outline.split("/")) {
+            list.add(new Stroke(s));
+        }
+        Stroke[] result = new Stroke[list.size()];
+        return list.toArray(result);
     }
 
 
@@ -97,19 +107,26 @@ public class Stroke {
     private String rtfcre;
     private boolean isCorrection;
 
-    public Stroke(Set<String> input) {
+    public Stroke(Set<String> keys) {
         //sort and remove invalid and duplicate keys
         raw = "";
-        for (String s : input) {
-            raw += s;
+        for (String k : keys) {
+            raw += k;
         }
         List<String> stroke_keys= new LinkedList<String>();
         for (String key : STENO_KEYS.keySet()) {
-            if (input.contains(key)) {
+            if (keys.contains(key)) {
                 stroke_keys.add(key);
             }
         }
         rtfcre = constructStroke(convertNumbers(stroke_keys));
+        isCorrection = (rtfcre.equals("*"));
+    }
+
+    public Stroke(String keyString) {
+        raw=keyString;
+        keyString = keyString.split("/")[0];
+        rtfcre=normalize(keyString);
         isCorrection = (rtfcre.equals("*"));
     }
 

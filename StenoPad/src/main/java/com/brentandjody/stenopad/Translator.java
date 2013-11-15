@@ -33,9 +33,15 @@ public class Translator {
         // process a single stroke
         if (stroke.isCorrection()) {
             if (! strokeQ.isEmpty()) {
-                undoFromQueue();
+                strokeQ.removeLast();
+                if (strokeQ.isEmpty()) {
+                    replayHistoryItem(undo);
+                }
             } else {
-                undoFromHistory();
+                if (! history.isEmpty()) {
+                    undo.add(history.removeLast());
+                    replayHistoryItem(undo);
+                }
             }
         } else {
             if (strokeQ.isEmpty()) {
@@ -53,7 +59,15 @@ public class Translator {
             } else {
                 lookup = dictionary.lookup(Stroke.combine(strokesInQueue()) + "/" + stroke);
                 if (lookup==null) {
-                    translation = new Translation(strokesInQueue(), dictionary.lookup(Stroke.combine(strokesInQueue())));
+                    Stroke[] subStroke = dictionary.longestValidStroke(Stroke.combine(strokesInQueue()));
+                    lookup = dictionary.forceLookup(Stroke.combine(subStroke));
+                    translation = new Translation(subStroke, lookup);
+                    for (Stroke s : subStroke) {
+                        Stroke r = strokeQ.remove();
+                        if (! r.equals(s)) {
+                            System.err.print("Stroke in queue did not match stroke that was translated");
+                        }
+                    }
                     strokeQ.add(stroke);
                 } else {
                     if (lookup.isEmpty()) { //ambiguous
@@ -66,15 +80,20 @@ public class Translator {
                     }
                 }
             }
+            if (translation!= null) {
+                play.add(translation);
+                history.add(translation);
+            }
         }
     }
 
-    private void undoFromQueue() {
-        //TODO:
-    }
-
-    private void undoFromHistory() {
-        //TODO:
+    private void replayHistoryItem(List<Translation> undo) {
+        if (history.isEmpty()) return;
+        Translation t = history.removeLast();
+        undo.add(t);
+        for (Stroke s : t.strokes()) {
+            translate(s);
+        }
     }
 
     private Stroke[] strokesInQueue() {

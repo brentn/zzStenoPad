@@ -1,11 +1,13 @@
 package com.brentandjody.stenopad;
 
+import android.test.AndroidTestCase;
+
 import junit.framework.TestCase;
 
 import java.util.LinkedList;
 import java.util.Queue;
 
-public class DictionaryTest extends TestCase {
+public class DictionaryTest extends AndroidTestCase {
 
     private Dictionary dictionary;
 
