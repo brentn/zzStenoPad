@@ -19,5 +19,18 @@ public class Translation {
         english = translation;
     }
 
+    public Stroke[] strokes() {
+        return strokes;
+    }
+
+    public String english() {
+        return english;
+    }
+
+    public String[] rtfcre() {
+        //TODO:
+        return null;
+    }
+
 }
 
