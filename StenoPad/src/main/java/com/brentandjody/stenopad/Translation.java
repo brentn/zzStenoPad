@@ -1,7 +1,8 @@
 package com.brentandjody.stenopad;
 
+
 /**
- * Created by brent on 13/11/13.
+ * Created by brent on  13/11/13.
  * This is the main translation class that converts a stream of strokes
  * into english text.
  */
@@ -11,6 +12,11 @@ public class Translation {
     private String english;
     private String[] replaced;
     private int[] formatting;
+
+    @Override
+    public String toString() {
+        return "Translation(" + rtfcre() + " : " + english + ")";
+    }
 
     public Translation(Stroke[] outline, String translation) {
         // outline: a series of stroke objects
@@ -27,9 +33,8 @@ public class Translation {
         return english;
     }
 
-    public String[] rtfcre() {
-        //TODO:
-        return null;
+    public String rtfcre() {
+        return Stroke.combine(strokes);
     }
 
 }

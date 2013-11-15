@@ -12,10 +12,11 @@ import java.util.Set;
 /**
  * Stoke object
  * represents a sequence of steno keys
+ * Accepts only keys in STENO_KEYS and rejects everything else
  */
 public class Stroke {
 
-    //private static final String STOKE_DELIMITER="/";
+    private static final char STROKE_DELIMITER='/';
     private static final Set<String> IMPLICIT_HYPHENS = new HashSet<String>() {{
         add("A-"); add("O-"); add("5-"); add("0-"); add("-E"); add("U"); add("*");
     }};
@@ -29,6 +30,19 @@ public class Stroke {
         put("-F", 13); put("-R", 14); put("-P", 15); put("-B", 16); put("-L", 17); put("-G", 18);
         put("-T", 19); put("-S", 20); put("-D", 21); put("-Z", 22);
     }};
+
+    public static String combine(Stroke[] strokes) {
+        StringBuilder sb = new StringBuilder();
+        for (Stroke s : strokes) {
+            sb.append(s.rtfcre());
+            sb.append(STROKE_DELIMITER);
+        }
+        if (sb.charAt(sb.length()-1) == STROKE_DELIMITER) {
+            sb.deleteCharAt((sb.length()-1));
+        }
+        return sb.toString();
+    }
+
 
     public static String normalize(String input) {
         List<String> keys = new ArrayList<String>();
@@ -76,28 +90,59 @@ public class Stroke {
         }
         Set keyset = new HashSet<String>(keys);
         Stroke converted = new Stroke(keyset);
-        return converted.stroke;
+        return converted.rtfcre;
     }
 
-    private String stroke;
+    private String raw;
+    private String rtfcre;
+    private boolean isCorrection;
 
     public Stroke(Set<String> input) {
         //sort and remove invalid and duplicate keys
+        raw = "";
+        for (String s : input) {
+            raw += s;
+        }
         List<String> stroke_keys= new LinkedList<String>();
         for (String key : STENO_KEYS.keySet()) {
             if (input.contains(key)) {
                 stroke_keys.add(key);
             }
         }
-        stroke = constructStroke(convertNumbers(stroke_keys));
+        rtfcre = constructStroke(convertNumbers(stroke_keys));
+        isCorrection = (rtfcre.equals("*"));
     }
 
     public String rtfcre() {
-        return stroke;
+        return rtfcre;
+    }
+
+    public Stroke[] asArray() {
+        Stroke[] result = new Stroke[1];
+        result[0] = this;
+        return result;
+    }
+
+    public boolean isCorrection() {
+        return isCorrection;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Stroke)) return false;
+        return this.rtfcre.equals(((Stroke) o).rtfcre());
+    }
+
+    @Override
+    public String toString() {
+        String result = "Stroke(";
+        if (isCorrection) result = "*Stroke(";
+        result += rtfcre + " : " + raw + ")";
+        return result;
     }
 
     private List<String> convertNumbers(List<String> keys) {
-        // convert appropriate letters to numbers if the stroke contains '#'
+        // convert appropriate letters to numbers if the rtfcre contains '#'
         if ((keys==null) || (!keys.contains("#"))) return keys;
         List<String> result = new LinkedList<String>();
         boolean numeral = false;
