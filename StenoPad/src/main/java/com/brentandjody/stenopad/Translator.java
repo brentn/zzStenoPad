@@ -2,8 +2,10 @@ package com.brentandjody.stenopad;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.LinkedBlockingDeque;
 
 /**
@@ -13,10 +15,15 @@ import java.util.concurrent.LinkedBlockingDeque;
 public class Translator {
 
     private static final int HISTORY_SIZE = 50;
+    private static final Set<String> SUFFIX_KEYS = new HashSet<String>() {{
+        add("-S"); add("-G"); add("-Z"); add("-D"); }};
+
 
     private final StenoDictionary dictionary;
     private Deque<Stroke> strokeQ;
     private LimitedSizeDeque<Translation> history;
+    List<Translation> play = new LinkedList<Translation>();
+    List<Translation> undo = new LinkedList<Translation>();
 
     public Translator(StenoDictionary d) {
         dictionary = d;
@@ -24,10 +31,9 @@ public class Translator {
         history = new LimitedSizeDeque<Translation>(HISTORY_SIZE);
     }
 
-    private void translate(Stroke stroke) {
-        List<Translation> play = new LinkedList<Translation>();
-        List<Translation> undo = new LinkedList<Translation>();
+    public void translate(Stroke stroke, Translation.TranslationPlayer player) {
         Translation translation;
+        Translation state=null;
         List<Stroke> strokes;
         String lookup;
         // process a single stroke
@@ -35,12 +41,12 @@ public class Translator {
             if (! strokeQ.isEmpty()) {
                 strokeQ.removeLast();
                 if (strokeQ.isEmpty()) {
-                    replayHistoryItem(undo);
+                    replayHistoryItem();
                 }
             } else {
                 if (! history.isEmpty()) {
                     undo.add(history.removeLast());
-                    replayHistoryItem(undo);
+                    replayHistoryItem();
                 }
             }
         } else {
@@ -82,23 +88,41 @@ public class Translator {
             }
             if (translation!= null) {
                 play.add(translation);
+                state=history.peekLast();
                 history.add(translation);
             }
         }
+        if (player != null) {
+            player.playTranslation(undo, play, state, wordsInQueue());
+            undo.clear();
+            play.clear();
+        }
     }
 
-    private void replayHistoryItem(List<Translation> undo) {
+    private void replayHistoryItem() {
         if (history.isEmpty()) return;
         Translation t = history.removeLast();
         undo.add(t);
         for (Stroke s : t.strokes()) {
-            translate(s);
+            translate(s, null);
         }
     }
 
     private Stroke[] strokesInQueue() {
         Stroke[] result = new Stroke[strokeQ.size()];
         return strokeQ.toArray(result);
+    }
+
+    private String wordsInQueue() {
+        String stroke = Stroke.combine(strokesInQueue());
+        String result = dictionary.forceLookup(stroke);
+        if (result == null)
+            if (stroke!=null) {
+                return stroke;
+            } else {
+                return "";
+            }
+        return result;
     }
 
     class LimitedSizeDeque<Value> extends LinkedBlockingDeque<Value> {

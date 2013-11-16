@@ -1,6 +1,8 @@
 package com.brentandjody.stenopad;
 
 
+import java.util.List;
+
 /**
  * Created by brent on  13/11/13.
  * This is the main translation class
@@ -10,8 +12,11 @@ public class Translation {
 
     private final Stroke[] strokes;
     private final String english;
-    private String[] replaced;
     private int[] formatting;
+
+    public interface TranslationPlayer {
+        public void playTranslation(List<Translation> undo, List<Translation> play, Translation state, String staging);
+    }
 
     @Override
     public String toString() {
@@ -35,6 +40,10 @@ public class Translation {
 
     public String rtfcre() {
         return Stroke.combine(strokes);
+    }
+
+    public int[] getFormatting() {
+        return formatting;
     }
 
 }
