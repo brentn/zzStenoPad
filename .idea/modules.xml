@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/StenoPad/StenoPad.iml" filepath="$PROJECT_DIR$/StenoPad/StenoPad.iml" />
       <module fileurl="file://$PROJECT_DIR$/StenoPadProject.iml" filepath="$PROJECT_DIR$/StenoPadProject.iml" />
+      <module fileurl="file://$PROJECT_DIR$/dictionary/dictionary.iml" filepath="$PROJECT_DIR$/dictionary/dictionary.iml" />
     </modules>
   </component>
 </project>

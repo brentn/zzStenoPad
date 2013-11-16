@@ -11,15 +11,10 @@ public class TranslationTest extends AndroidTestCase {
     private static final Stroke S = new Stroke(new HashSet<String>() {{add("S-");}});
     private static final Stroke T = new Stroke(new HashSet<String>() {{add("T-");}});
 
-    private StenoDictionary dictionary;
     private Stroke[] strokeResult;
 
     public void setUp() throws Exception {
         super.setUp();
-        if (dictionary == null) {
-            dictionary = new StenoDictionary(getContext());
-            dictionary.load("test.json");
-        }
         strokeResult = new Stroke[2]; strokeResult[0]=S; strokeResult[1]=T;
     }
 

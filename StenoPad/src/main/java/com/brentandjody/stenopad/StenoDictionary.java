@@ -141,7 +141,8 @@ public class StenoDictionary {
 
         protected void onPostExecute(Long result) {
             loading = false;
-            onDictionaryLoadedListener.onDictionaryLoaded();
+            if (onDictionaryLoadedListener != null)
+                onDictionaryLoadedListener.onDictionaryLoaded();
         }
     }
 
