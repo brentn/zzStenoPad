@@ -91,7 +91,7 @@ public class StenoDictionary {
         //or the longest combination of strokes, starting from the beginning of outline, that has a valid translation
         //or null
         String stroke = dictionary.longestPrefixOf(outline);
-        while (!((stroke.contains("/"))) && (outlineContainsStroke(outline, stroke))) {
+        while ((stroke.contains("/")) && (! outlineContainsStroke(outline, stroke))) {
             //remove the last stroke and try again
             String newOutline = stroke.substring(0,stroke.lastIndexOf('/')-1);
             stroke = dictionary.longestPrefixOf(newOutline);
