@@ -1,4 +1,4 @@
-package com.brentandjody.stenopad;
+package com.brentandjody.stenopad.Translation.tests;
 
 import android.test.AndroidTestCase;  //because this requires getContext()
 

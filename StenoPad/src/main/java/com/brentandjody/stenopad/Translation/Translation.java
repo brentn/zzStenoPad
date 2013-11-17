@@ -14,8 +14,8 @@ public class Translation {
     private final String english;
     private int[] formatting;
 
-    public interface TranslationPlayer {
-        public void playTranslation(List<Translation> undo, List<Translation> play, Translation state, String staging);
+    public interface Display {
+        public void update(List<Translation> undo, List<Translation> play, Translation state, String staging);
     }
 
     @Override

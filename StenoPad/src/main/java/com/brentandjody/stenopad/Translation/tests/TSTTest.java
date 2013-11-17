@@ -1,18 +1,20 @@
-package com.brentandjody.stenopadtests.Translation;
+package com.brentandjody.stenopad.Translation.tests;
 
 import android.test.AndroidTestCase;
 
 
+import com.brentandjody.stenopad.Translation.TST;
+
 import java.util.LinkedList;
 import java.util.Queue;
 
-public class DictionaryTest extends AndroidTestCase {
+public class TSTTest extends AndroidTestCase {
 
-    private Dictionary<String> dictionary;
+    private TST<String> dictionary;
 
     public void setUp() throws Exception {
         super.setUp();
-        dictionary = new Dictionary<String>();
+        dictionary = new TST<String>();
     }
 
     public void testSize() throws Exception {

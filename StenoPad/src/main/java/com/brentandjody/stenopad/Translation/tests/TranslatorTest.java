@@ -1,8 +1,8 @@
-package com.brentandjody.stenopad;
+package com.brentandjody.stenopad.Translation.tests;
 
 import android.test.AndroidTestCase;
 
-import com.brentandjody.stenopad.Translation.StenoDictionary;
+import com.brentandjody.stenopad.Translation.Dictionary;
 import com.brentandjody.stenopad.Translation.Stroke;
 import com.brentandjody.stenopad.Translation.Translation;
 import com.brentandjody.stenopad.Translation.Translator;
@@ -12,9 +12,9 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 
-public class TranslatorTest extends AndroidTestCase implements Translation.TranslationPlayer{
+public class TranslatorTest extends AndroidTestCase implements Translation.Display {
 
-    private StenoDictionary dictionary;
+    private Dictionary dictionary;
     private Translator translator;
     private boolean loaded = false;
     private List<Translation> test_undo, test_play;
@@ -25,9 +25,9 @@ public class TranslatorTest extends AndroidTestCase implements Translation.Trans
         super.setUp();
         if (! loaded ) {
             final CountDownLatch latch = new CountDownLatch(1);
-            dictionary = new StenoDictionary(getContext());
+            dictionary = new Dictionary(getContext());
             dictionary.load("test.json");
-            dictionary.setOnDictionaryLoadedListener(new StenoDictionary.OnDictionaryLoadedListener() {
+            dictionary.setOnDictionaryLoadedListener(new Dictionary.OnDictionaryLoadedListener() {
                 @Override
                 public void onDictionaryLoaded() {
                     latch.countDown();
@@ -39,7 +39,7 @@ public class TranslatorTest extends AndroidTestCase implements Translation.Trans
         translator = new Translator(dictionary);
     }
 
-    public void playTranslation(List<Translation> undo, List<Translation> play, Translation state, String staging) {
+    public void update(List<Translation> undo, List<Translation> play, Translation state, String staging) {
         if (undo != null) {
             test_undo = new LinkedList<Translation>();
             for (Translation t : undo) {

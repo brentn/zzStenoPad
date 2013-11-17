@@ -1,153 +1,154 @@
-package com.brentandjody.stenopad.Translation
-        ;
+package com.brentandjody.stenopad.Translation;
 
-import java.util.LinkedList;
-import java.util.Queue;
+import android.content.Context;
+import android.content.res.AssetManager;
+import android.os.AsyncTask;
+import android.util.Log;
 
-/**
- * Created by brent on 16/10/13.
- *
- *  This is the data structure that holds the main Dictionary.
- *  Symbol table with string keys, implemented using a ternary search
- *  trie (TST).
- *
- *  Remarks
- *  --------
- *    - can't use a key that is the empty string ""
- *    - adding duplicate key replaces the old value 
- *
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.Arrays;
+import java.util.Collection;
+
+/* This is the main Steno Dictionary class
+ * which stores a dictionary of stroke / translation pairs
+ * and can efficiently do forward lookups
  */
 
-public class Dictionary<Value> {
-    private int N;       // size
-    private Node root;   // root of Dictionary
+public class Dictionary {
 
-    private class Node {
-        private char c;                 // character
-        private Node left, mid, right;  // left, middle, and right subtries
-        private Value val;              // value associated with string
+    private static final String[] DICTIONARY_TYPES = {".json"};
+    private static final String DEFAULT_DICTIONARY = "dict.json";
+
+    private TST<String> dictionary;
+    private final Context context;
+    //private int longestStroke = 0;
+    private Boolean loading = false;
+
+    public Dictionary(Context c) {
+        context = c;
+        dictionary = new TST<String>();
     }
 
-    // return number of key-value pairs
+    public Boolean isLoading() {
+        return loading;
+    }
+
+    public void clear() {
+        dictionary = new TST<String>();
+    }
+
     public int size() {
-        return N;
+        return dictionary.size();
     }
 
-    /**************************************************************
-     * Is string key in the symbol table?
-     **************************************************************/
-    public boolean contains(String key) {
-        return get(key) != null;
+    public void loadDefault() {
+        load(DEFAULT_DICTIONARY);
     }
 
-    public Value get(String key) {
-        if (key == null) throw new NullPointerException();
-        if (key.length() == 0) throw new IllegalArgumentException("key must have length >= 1");
-        Node x = get(root, key, 0);
-        if (x == null) return null;
-        return (Value) x.val;
-    }
-
-    // return subtrie corresponding to given key
-    private Node get(Node x, String key, int d) {
-        if (key == null) throw new NullPointerException();
-        if (key.length() == 0) throw new IllegalArgumentException("key must have length >= 1");
-        if (x == null) return null;
-        char c = key.charAt(d);
-        if      (c < x.c)              return get(x.left,  key, d);
-        else if (c > x.c)              return get(x.right, key, d);
-        else if (d < key.length() - 1) return get(x.mid,   key, d+1);
-        else                           return x;
-    }
-
-
-    /**************************************************************
-     * Insert string s into the symbol table.
-     **************************************************************/
-    public void put(String s, Value val) {
-        if (!contains(s)) N++;
-        root = put(root, s, val, 0);
-    }
-
-    private Node put(Node x, String s, Value val, int d) {
-        char c = s.charAt(d);
-        if (x == null) {
-            x = new Node();
-            x.c = c;
-        }
-        if      (c < x.c)             x.left  = put(x.left,  s, val, d);
-        else if (c > x.c)             x.right = put(x.right, s, val, d);
-        else if (d < s.length() - 1)  x.mid   = put(x.mid,   s, val, d+1);
-        else                          x.val   = val;
-        return x;
-    }
-
-
-    /**************************************************************
-     * Find and return longest prefix of s in Dictionary
-     **************************************************************/
-    public String longestPrefixOf(String s) {
-        if (s == null || s.length() == 0) return null;
-        int length = 0;
-        Node x = root;
-        int i = 0;
-        while (x != null && i < s.length()) {
-            char c = s.charAt(i);
-            if      (c < x.c) x = x.left;
-            else if (c > x.c) x = x.right;
-            else {
-                i++;
-                if (x.val != null) length = i;
-                x = x.mid;
+    public void load(String filename) {
+        String extension = filename.substring(filename.lastIndexOf("."));
+        if (Arrays.asList(DICTIONARY_TYPES).contains(extension)) {
+            try {
+                InputStream stream = context.getAssets().open(filename);
+                stream.close();
+            } catch (IOException e) {
+                System.err.println("Dictionary File: "+filename+" could not be found");
             }
+        } else {
+            throw new IllegalArgumentException(extension + " is not an accepted dictionary format.");
         }
-        return s.substring(0, length);
+        loading = true;
+        new JsonLoader().execute(filename);
     }
 
-    // all keys in symbol table
-    public Iterable<String> keys() {
-        Queue<String> queue = new LinkedList<String>();
-        collect(root, "", queue);
-        return queue;
+    private OnDictionaryLoadedListener onDictionaryLoadedListener;
+    public interface OnDictionaryLoadedListener {
+        public void onDictionaryLoaded();
+    }
+    public void setOnDictionaryLoadedListener(OnDictionaryLoadedListener listener) {
+        onDictionaryLoadedListener = listener;
     }
 
-    // all keys starting with given prefix
-    public Iterable<String> prefixMatch(String prefix) {
-        Queue<String> queue = new LinkedList<String>();
-        Node x = get(root, prefix, 0);
-        if (x == null) return queue;
-        if (x.val != null) queue.add(prefix);
-        collect(x.mid, prefix, queue);
-        return queue;
-    }
-
-    // all keys in subtrie rooted at x with given prefix
-    private void collect(Node x, String prefix, Queue<String> queue) {
-        if (x == null) return;
-        collect(x.left,  prefix,       queue);
-        if (x.val != null) queue.add(prefix + x.c);
-        collect(x.mid,   prefix + x.c, queue);
-        collect(x.right, prefix,       queue);
-    }
-
-
-    // return all keys matching given wilcard pattern
-    public Iterable<String> wildcardMatch(String pat) {
-        Queue<String> queue = new LinkedList<String>();
-        collect(root, "", 0, pat, queue);
-        return queue;
-    }
-
-    public void collect(Node x, String prefix, int i, String pat, Queue<String> q) {
-        if (x == null) return;
-        char c = pat.charAt(i);
-        if (c == '.' || c < x.c) collect(x.left, prefix, i, pat, q);
-        if (c == '.' || c == x.c) {
-            if (i == pat.length() - 1 && x.val != null) q.add(prefix + x.c);
-            if (i < pat.length() - 1) collect(x.mid, prefix + x.c, i+1, pat, q);
+    public String lookup(String key) {
+        // return null if not found
+        // and empty string if the result is ambiguous
+        if (isLoading()) {
+            Log.w("Lookup", "Called while dictionary loading");
         }
-        if (c == '.' || c > x.c) collect(x.right, prefix, i, pat, q);
+        if (key.isEmpty()) return null;
+        if (((Collection) dictionary.prefixMatch(key+"/")).size() > 0) return ""; //ambiguous
+        return dictionary.get(key);
     }
 
+    public String forceLookup(String key) {
+        //return the english translation for this key (even if ambiguous)
+        //or null if not found found
+        // (this is the same as lookup, except it doesn't return "" for ambiguous entries
+        if (key == null || key.isEmpty()) return null;
+        return (dictionary.get(key));
+    }
+
+    public Stroke[] longestValidStroke(String outline) {
+        //returns outline, if it has a valid translation
+        //or the longest combination of strokes, starting from the beginning of outline, that has a valid translation
+        //or null
+        String stroke = dictionary.longestPrefixOf(outline);
+        while ((stroke.contains("/")) && (! outlineContainsStroke(outline, stroke))) {
+            //remove the last stroke and try again
+            String newOutline = stroke.substring(0,stroke.lastIndexOf('/')-1);
+            stroke = dictionary.longestPrefixOf(newOutline);
+        }
+        if (! outlineContainsStroke(outline, stroke)) return null;
+        return Stroke.separate(stroke);
+    }
+
+    private boolean outlineContainsStroke(String outline, String stroke) {
+        //ensures stroke does not contain "partial" strokes  from outline
+        return ((outline+"/").contains(stroke+"/"));
+    }
+
+    private class JsonLoader extends AsyncTask<String, Integer, Long> {
+        protected Long doInBackground(String... filenames) {
+            int count = filenames.length;
+            String line, stroke, translation;
+            String[] fields;
+            for (int i = 0; i < count; i++) {
+                if (filenames[i] == null || filenames[i].isEmpty())
+                    throw new IllegalArgumentException("Dictionary filename not provided");
+                try {
+                    AssetManager am = context.getAssets();
+                    InputStream filestream = am.open(filenames[i]);
+                    InputStreamReader reader = new InputStreamReader(filestream);
+                    BufferedReader lines = new BufferedReader(reader);
+                    while ((line = lines.readLine()) != null) {
+                        fields = line.split("\"");
+                        if ((fields.length >= 3) && (fields[3].length() > 0)) {
+                            stroke = fields[1];
+                            translation = fields[3];
+                            dictionary.put(stroke, translation);
+//                            if (stroke.length() > longestStroke) {
+//                                longestStroke = stroke.length();
+//                            }
+                        }
+                    }
+                    lines.close();
+                    reader.close();
+                    filestream.close();
+                } catch (IOException e) {
+                    System.err.println("Dictionary File: "+filenames[i]+" could not be found");
+                }
+            }
+            return (long) count;
+        }
+
+        protected void onPostExecute(Long result) {
+            loading = false;
+            if (onDictionaryLoadedListener != null)
+                onDictionaryLoadedListener.onDictionaryLoaded();
+        }
+    }
 
 }

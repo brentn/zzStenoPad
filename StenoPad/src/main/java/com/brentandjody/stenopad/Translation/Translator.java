@@ -1,8 +1,6 @@
 package com.brentandjody.stenopad.Translation;
 
-import com.brentandjody.stenopad.Translation.StenoDictionary;
-import com.brentandjody.stenopad.Translation.Stroke;
-import com.brentandjody.stenopad.Translation.Translation;
+import android.content.Context;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -23,19 +21,24 @@ public class Translator {
         add("-S"); add("-G"); add("-Z"); add("-D"); }};
 
 
-    private final StenoDictionary dictionary;
+    private final Dictionary dictionary;
     private Deque<Stroke> strokeQ;
     private LimitedSizeDeque<Translation> history;
     List<Translation> play = new LinkedList<Translation>();
     List<Translation> undo = new LinkedList<Translation>();
 
-    public Translator(StenoDictionary d) {
+    public Translator(Context context) {
+        dictionary = new Dictionary(context);
+        dictionary.loadDefault();
+    }
+
+    public Translator(Dictionary d) {
         dictionary = d;
         strokeQ = new ArrayDeque<Stroke>();
         history = new LimitedSizeDeque<Translation>(HISTORY_SIZE);
     }
 
-    public void translate(Stroke stroke, Translation.TranslationPlayer player) {
+    public void translate(Stroke stroke, Translation.Display display) {
         Translation translation;
         Translation state=null;
         boolean state_set = false;
@@ -101,10 +104,10 @@ public class Translator {
                 history.add(translation);
             }
         }
-        if (player != null) {
+        if (display != null) {
             if (!state_set)
                 state=history.peekLast();
-            player.playTranslation(undo, play, state, wordsInQueue());
+            display.update(undo, play, state, wordsInQueue());
             undo.clear();
             play.clear();
         }
