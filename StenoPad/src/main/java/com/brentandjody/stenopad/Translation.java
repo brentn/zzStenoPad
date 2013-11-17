@@ -30,6 +30,12 @@ public class Translation {
         english = translation;
     }
 
+    public Translation copy() {
+        Translation duplicate = new Translation(strokes, english);
+        duplicate.setFormatting(formatting);
+        return duplicate;
+    }
+
     public Stroke[] strokes() {
         return strokes;
     }
@@ -40,6 +46,10 @@ public class Translation {
 
     public String rtfcre() {
         return Stroke.combine(strokes);
+    }
+
+    public void setFormatting(int[] f) {
+        formatting = f;
     }
 
     public int[] getFormatting() {

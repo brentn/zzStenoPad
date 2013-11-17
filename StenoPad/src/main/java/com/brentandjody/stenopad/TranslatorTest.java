@@ -2,10 +2,8 @@ package com.brentandjody.stenopad;
 
 import android.test.AndroidTestCase;
 
-import java.util.Arrays;
-import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 
 
@@ -14,9 +12,9 @@ public class TranslatorTest extends AndroidTestCase implements Translation.Trans
     private StenoDictionary dictionary;
     private Translator translator;
     private boolean loaded = false;
-    private List<Translation> undo, play;
-    private Translation state;
-    private String staging = "";
+    private List<Translation> test_undo, test_play;
+    private Translation test_state;
+    private String test_staging = "";
 
     public void setUp() throws Exception {
         super.setUp();
@@ -37,10 +35,28 @@ public class TranslatorTest extends AndroidTestCase implements Translation.Trans
     }
 
     public void playTranslation(List<Translation> undo, List<Translation> play, Translation state, String staging) {
-        this.undo = undo;
-        this.play = play;
-        this.state = state;
-        this.staging = staging;
+        if (undo != null) {
+            test_undo = new LinkedList<Translation>();
+            for (Translation t : undo) {
+                test_undo.add(t);
+            }
+        } else {
+            test_undo = null;
+        }
+        if (play != null) {
+            test_play = new LinkedList<Translation>();
+            for (Translation t : play) {
+                test_play.add(t);
+            }
+        } else {
+            test_play = null;
+        }
+        if (state!=null) {
+            test_state = state.copy();
+        } else {
+            test_state = null;
+        }
+        test_staging = staging;
     }
 
     public void testIsLoaded() throws Exception {
@@ -48,39 +64,40 @@ public class TranslatorTest extends AndroidTestCase implements Translation.Trans
     }
 
     public void testTranslate() throws Exception {
-        assertNull(undo);
-        assertNull(play);
-        assertNull(state);
-        assertEquals("", staging);
+        assertNull(test_undo);
+        assertNull(test_play);
+        assertNull(test_state);
+        assertEquals("", test_staging);
         translator.translate(new Stroke("*"), this);
-        assertEquals(0, undo.size());
-        assertEquals(0, play.size());
-        assertNull(state);
-        assertEquals("", staging);
+        assertEquals(0, test_undo.size());
+        assertEquals(0, test_play.size());
+        assertNull(test_state);
+        assertEquals("", test_staging);
         translator.translate(new Stroke("AD"), this);
-        assertEquals(0, undo.size());
-        assertEquals(0, play.size());
-        assertNull(state);
-        assertEquals("AD", staging);
+        assertEquals(0, test_undo.size());
+        assertEquals(0, test_play.size());
+        assertNull(test_state);
+        assertEquals("AD", test_staging);
         translator.translate(new Stroke("SKWRAEUS"), this);
-        assertEquals(0, undo.size());
-        assertEquals(0, play.size());
-        assertNull(state);
-        assertEquals("AD/SKWRAEUS", staging);
+        assertEquals(0, test_undo.size());
+        assertEquals(0, test_play.size());
+        assertNull(test_state);
+        assertEquals("AD/SKWRAEUS", test_staging);
         translator.translate(new Stroke("EPBT"), this);
-        assertEquals(0, undo.size());
-        assertEquals("adjacent", play.get(0).english());
-        assertNull(state);
-        assertEquals("", staging);
+        assertEquals(0, test_undo.size());
+        assertEquals(1, test_play.size());
+        assertEquals("adjacent", test_play.get(0).english());
+        assertNull(test_state);
+        assertEquals("", test_staging);
         translator.translate(new Stroke("AD"), this);
-        assertEquals(0, undo.size());
-        assertEquals(0, play.size());
-        assertEquals("adjacent", state.english());
-        assertEquals("AD", staging);
+        assertEquals(0, test_undo.size());
+        assertEquals(0, test_play.size());
+        assertEquals("adjacent", test_state.english());
+        assertEquals("AD", test_staging);
         translator.translate(new Stroke("SKWRAOUR"), this);
-        assertEquals(0, undo.size());
-        assertEquals("adjure", play.get(0).english());
-        assertEquals("adjacent", state.english());
-        assertEquals("",staging);
+        assertEquals(0, test_undo.size());
+        assertEquals("adjure", test_play.get(0).english());
+        assertEquals("adjacent", test_state.english());
+        assertEquals("", test_staging);
     }
 }

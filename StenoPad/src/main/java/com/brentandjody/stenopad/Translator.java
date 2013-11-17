@@ -34,7 +34,7 @@ public class Translator {
     public void translate(Stroke stroke, Translation.TranslationPlayer player) {
         Translation translation;
         Translation state=null;
-        List<Stroke> strokes;
+        boolean state_set = false;
         String lookup;
         // process a single stroke
         if (stroke.isCorrection()) {
@@ -63,15 +63,19 @@ public class Translator {
                     }
                 }
             } else {
-                lookup = dictionary.lookup(Stroke.combine(strokesInQueue()) + "/" + stroke);
+                lookup = dictionary.lookup(Stroke.combine(strokesInQueue()) + "/" + stroke.rtfcre());
                 if (lookup==null) {
                     Stroke[] subStroke = dictionary.longestValidStroke(Stroke.combine(strokesInQueue()));
-                    lookup = dictionary.forceLookup(Stroke.combine(subStroke));
-                    translation = new Translation(subStroke, lookup);
-                    for (Stroke s : subStroke) {
-                        Stroke r = strokeQ.remove();
-                        if (! r.equals(s)) {
-                            System.err.print("Stroke in queue did not match stroke that was translated");
+                    if (subStroke == null) {
+                        translation = new Translation(strokesInQueue(), Stroke.combine(strokesInQueue()));
+                    } else {
+                        lookup = dictionary.forceLookup(Stroke.combine(subStroke));
+                        translation = new Translation(subStroke, lookup);
+                        for (Stroke s : subStroke) {
+                            Stroke r = strokeQ.remove();
+                            if (! r.equals(s)) {
+                                System.err.print("Stroke in queue did not match stroke that was translated");
+                            }
                         }
                     }
                     strokeQ.add(stroke);
@@ -88,11 +92,14 @@ public class Translator {
             }
             if (translation!= null) {
                 play.add(translation);
+                state_set=true;
                 state=history.peekLast();
                 history.add(translation);
             }
         }
         if (player != null) {
+            if (!state_set)
+                state=history.peekLast();
             player.playTranslation(undo, play, state, wordsInQueue());
             undo.clear();
             play.clear();
@@ -139,16 +146,21 @@ public class Translator {
 
         @Override
         public void addLast(Value value) {
-            add(value);
+            super.addLast(value);
+            limitSize();
         }
 
         @Override
         public boolean add(Value value) {
-            boolean result = super.add(value); //addLast
+            super.add(value); //addLast
+            limitSize();
+            return true;
+        }
+
+        private void limitSize() {
             while (size() > size_limit) {
                 removeFirst();
             }
-            return result;
         }
     }
 }
