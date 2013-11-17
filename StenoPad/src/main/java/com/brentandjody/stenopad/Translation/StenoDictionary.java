@@ -1,4 +1,4 @@
-package com.brentandjody.stenopad;
+package com.brentandjody.stenopad.Translation;
 
 import android.content.Context;
 import android.content.res.AssetManager;

@@ -1,6 +1,10 @@
 package com.brentandjody.stenopad;
 
 import android.test.AndroidTestCase;
+
+import com.brentandjody.stenopad.Translation.StenoDictionary;
+import com.brentandjody.stenopad.Translation.Stroke;
+
 import junit.framework.Assert;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;

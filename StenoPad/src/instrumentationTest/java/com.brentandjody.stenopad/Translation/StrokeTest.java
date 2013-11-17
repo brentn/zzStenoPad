@@ -2,6 +2,8 @@ package com.brentandjody.stenopad;
 
 import android.test.AndroidTestCase;
 
+import com.brentandjody.stenopad.Translation.Stroke;
+
 import java.util.Arrays;
 import java.util.HashSet;
 

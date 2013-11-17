@@ -2,6 +2,9 @@ package com.brentandjody.stenopad;
 
 import android.test.AndroidTestCase;  //because this requires getContext()
 
+import com.brentandjody.stenopad.Translation.Stroke;
+import com.brentandjody.stenopad.Translation.Translation;
+
 import java.util.Arrays;
 import java.util.HashSet;
 

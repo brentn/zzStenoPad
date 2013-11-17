@@ -1,4 +1,8 @@
-package com.brentandjody.stenopad;
+package com.brentandjody.stenopad.Translation;
+
+import com.brentandjody.stenopad.Translation.StenoDictionary;
+import com.brentandjody.stenopad.Translation.Stroke;
+import com.brentandjody.stenopad.Translation.Translation;
 
 import java.util.ArrayDeque;
 import java.util.Deque;

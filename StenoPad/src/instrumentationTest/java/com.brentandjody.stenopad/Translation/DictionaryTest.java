@@ -1,4 +1,4 @@
-package com.brentandjody.stenopad;
+package com.brentandjody.stenopadtests.Translation;
 
 import android.test.AndroidTestCase;
 

@@ -2,6 +2,11 @@ package com.brentandjody.stenopad;
 
 import android.test.AndroidTestCase;
 
+import com.brentandjody.stenopad.Translation.StenoDictionary;
+import com.brentandjody.stenopad.Translation.Stroke;
+import com.brentandjody.stenopad.Translation.Translation;
+import com.brentandjody.stenopad.Translation.Translator;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -99,5 +104,6 @@ public class TranslatorTest extends AndroidTestCase implements Translation.Trans
         assertEquals("adjure", test_play.get(0).english());
         assertEquals("adjacent", test_state.english());
         assertEquals("", test_staging);
+        //TODO: more testing
     }
 }
