@@ -1,6 +1,7 @@
 package com.brentandjody.stenopad.Display;
 
 import android.graphics.Rect;
+import android.util.Log;
 import android.widget.TextView;
 
 /**
@@ -9,7 +10,7 @@ import android.widget.TextView;
  */
 public class DisplayDevice {
 
-    private int text_size = 12;
+    private int text_size = 24;
     private TextView main, preview;
 
     public DisplayDevice(TextView main_view, TextView preview_view) {
@@ -28,15 +29,16 @@ public class DisplayDevice {
         //position preview at the end of main
         Rect bounds = new Rect();
         main.getLineBounds(main.getLineCount()-1, bounds);
+        preview.setText(""+bounds.top);
         if ((bounds.width()+preview_width) < main_width) {
             // put preview at end of last line
-            preview.setTop(bounds.top);
-            preview.setLeft(bounds.right);
+            preview.setPadding(bounds.right, bounds.top, 0, 0);
         } else {
             // put preview at start of next line
-            preview.setTop(bounds.bottom);
-            preview.setLeft(0);
+            preview.setPadding(0, bounds.bottom, 0, 0);
         }
+        main.invalidate();
+        preview.invalidate();
     }
 
 

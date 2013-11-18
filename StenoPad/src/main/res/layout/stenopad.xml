@@ -12,10 +12,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:keepScreenOn="true"
-        android:textColor="#33b5e5"
-        android:textStyle="bold"
         android:textSize="50sp"
-        android:gravity="center" />
+        android:gravity="left|top"
+        android:typeface="serif" />
 
     <!-- This FrameLayout insets its children based on system windows using
          android:fitsSystemWindows. -->
@@ -24,7 +23,9 @@
         android:layout_height="wrap_content"
         android:id="@+id/preview"
         android:textColor="#33b5e5"
-        android:textStyle="italic" />
+        android:textStyle="italic"
+        android:gravity="left|top"
+        android:background="#555555" />
 
     <FrameLayout android:layout_width="match_parent"
         android:layout_height="match_parent"

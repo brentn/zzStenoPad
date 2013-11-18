@@ -25,7 +25,7 @@ public class StenoPad extends Activity {
      * If set, will toggle the system UI visibility upon interaction. Otherwise,
      * will show the system UI visibility upon interaction.
      */
-    private static final boolean TOGGLE_ON_CLICK = true;
+    private static final boolean TOGGLE_ON_CLICK = false;
 
     /**
      * The flags to pass to {@link SystemUiHider#getInstance}.
@@ -111,6 +111,9 @@ public class StenoPad extends Activity {
                 } else {
                     mSystemUiHider.show();
                 }
+
+                //TODO: remove this test
+                display.update("word ", "preview");
             }
         });
 
