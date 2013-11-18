@@ -12,7 +12,7 @@ public class Translation {
 
     private final Stroke[] strokes;
     private final String english;
-    private int[] formatting;
+    private State formatting;
 
     public interface Display {
         public void update(List<Translation> undo, List<Translation> play, Translation state, String staging);
@@ -48,11 +48,11 @@ public class Translation {
         return Stroke.combine(strokes);
     }
 
-    public void setFormatting(int[] f) {
+    public void setFormatting(State f) {
         formatting = f;
     }
 
-    public int[] getFormatting() {
+    public State getFormatting() {
         return formatting;
     }
 

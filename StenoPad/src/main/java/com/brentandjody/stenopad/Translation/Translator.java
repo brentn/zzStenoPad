@@ -60,7 +60,7 @@ public class Translator {
             if (strokeQ.isEmpty()) {
                 lookup = dictionary.lookup(stroke.rtfcre());
                 if (lookup==null) { //not found
-                    translation = new Translation(stroke.asArray(), stroke.rtfcre());
+                    translation = new Translation(stroke.asArray(), null);
                 } else {
                     if (lookup.isEmpty()) { //ambiguous
                         translation = null;
