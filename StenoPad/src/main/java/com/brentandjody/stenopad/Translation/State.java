@@ -34,8 +34,8 @@ public class State {
     public void attachEnd() {
         attachEnd=true;
     }
-    public void addBackspace() {
-        backspaces++;
+    public void addBackspaces(int x) {
+        backspaces+=x;
     }
 
 

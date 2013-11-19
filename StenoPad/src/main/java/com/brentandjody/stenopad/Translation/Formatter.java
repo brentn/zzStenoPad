@@ -12,27 +12,33 @@ import java.util.List;
  */
 public class Formatter {
 
-    private State state;  //formatting of prior stroke
-
     public Formatter() {
     }
 
-    public DisplayItem format(Translation[] undo, Translation[] play, State state) {
-        //Process undo, and play - and produce a DisplayItem
-        this.state=state;
-        StringBuilder sb = new StringBuilder();
+    public DisplayItem format(Iterable<Translation> undo, Iterable<Translation> play, State state) {
+        //Process play - and produce a DisplayItem
+        int backspaces = 0;
         for (Translation t : undo) {
-            sb.append(format(t));
+            backspaces+=t.getFormatting().getBackspaces();
         }
+        StringBuilder sb = new StringBuilder();
         for (Translation t : play) {
-            sb.append(format(t));
+            sb.append(format(t, state));
+            state=t.getFormatting();
         }
+        return new DisplayItem(backspaces, sb.toString(), "");
     }
 
     private String format(Translation translation, State priorState) {
-        if (translation.english() == null) return translation.rtfcre();
+        //decodes and updates formatting for translation
         State formatting = new State();
+        if (translation.english() == null) {
+            formatting.addBackspaces(translation.rtfcre().length()+1);
+            translation.setFormatting(formatting);
+            return translation.rtfcre()+" ";
+        }
         StringBuilder sb = new StringBuilder();
+        int bs = 0;
         for (String atom : breakApart(translation.english())) {
             if (atom.charAt(0) == '{') {
                 if (atom.equals("{|-}")) { formatting.setCapitalize(); atom=""; }
@@ -40,12 +46,19 @@ public class Formatter {
                 if (atom.charAt(1) == '&') { formatting.setGlue(); atom.replace("&", ""); }
                 if (atom.charAt(1) == '^') { formatting.attachStart(); atom.replace("{^", "{"); }
                 if (atom.charAt(atom.length()-2) == '^') { formatting.attachEnd(); atom.replace("^}", "}"); }
-                if (atom.equals("{#Return}")) { sb.append("\n"); atom=""; }
-                if (atom.equals("{#BackSpace}")) {formatting.addBackspace(); atom=""; }
+                if (atom.equals("{#Return}")) { sb.append("\n"); atom=""; bs+=1; }
+                if (atom.equals("{#BackSpace}")) {sb.append("\b"); bs-=1; formatting.attachEnd(); atom=""; }
             } else {
+                bs+=atom.length();
                 sb.append(atom);
             }
         }
+        if (!formatting.isAttachedEnd()) {
+            bs++;
+            sb.append(" ");
+        }
+        formatting.addBackspaces(bs);
+        translation.setFormatting(formatting);
         return sb.toString();
     }
 

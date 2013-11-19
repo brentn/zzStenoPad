@@ -15,4 +15,16 @@ public class DisplayItem {
         text = txt;
         preview = pre;
     }
+
+    public int getBackspaces() {
+        return backspaces;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public String getPreview() {
+        return preview;
+    }
 }

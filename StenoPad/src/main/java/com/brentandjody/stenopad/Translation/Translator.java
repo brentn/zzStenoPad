@@ -2,6 +2,8 @@ package com.brentandjody.stenopad.Translation;
 
 import android.content.Context;
 
+import com.brentandjody.stenopad.Display.DisplayItem;
+
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashSet;
@@ -19,10 +21,12 @@ public class Translator {
     private static final int HISTORY_SIZE = 50;
     private static final Set<String> SUFFIX_KEYS = new HashSet<String>() {{
         add("-S"); add("-G"); add("-Z"); add("-D"); }};
+    //TODO: if it has suffix, and is not found as is, find word without suffix and add it.
 
 
     private final Dictionary dictionary;
     private Deque<Stroke> strokeQ;
+    private Formatter formatter = new Formatter();
     private LimitedSizeDeque<Translation> history;
     List<Translation> play = new LinkedList<Translation>();
     List<Translation> undo = new LinkedList<Translation>();
@@ -40,8 +44,8 @@ public class Translator {
 
     public void translate(Stroke stroke, Translation.Display display) {
         Translation translation;
-        Translation state=null;
-        boolean state_set = false;
+        Translation last_translation=null;
+        boolean last_translation_set = false;
         String lookup;
         // process a single stroke
         if (stroke.isCorrection()) {
@@ -99,15 +103,16 @@ public class Translator {
             }
             if (translation!= null) {
                 play.add(translation);
-                state_set=true;
-                state=history.peekLast();
+                last_translation_set=true;
+                last_translation=history.peekLast();
                 history.add(translation);
             }
         }
         if (display != null) {
-            if (!state_set)
-                state=history.peekLast();
-            display.update(undo, play, state, wordsInQueue());
+            if (!last_translation_set)
+                last_translation=history.peekLast();
+            DisplayItem display_item = formatter.format(undo, play, last_translation.getFormatting());
+            display.update(undo, play, last_translation, wordsInQueue());
             undo.clear();
             play.clear();
         }
