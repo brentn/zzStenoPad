@@ -19,33 +19,39 @@ public class State {
     public State() {
     }
 
-    public void setGlue() {
+    public State setGlue() {
         glue = true;
+        return this;
     }
-    public void setCapitalize() {
+    public State setCapitalize() {
         capitalization = CAPITAL;
+        return this;
     }
-    public void setLowercase() {
+    public State setLowercase() {
         capitalization = LOWER;
+        return this;
     }
-    public void attachStart() {
+    public State attachStart() {
         attachStart=true;
+        return this;
     }
-    public void attachEnd() {
+    public State attachEnd() {
         attachEnd=true;
+        return this;
     }
-    public void addBackspaces(int x) {
+    public State addBackspaces(int x) {
         backspaces+=x;
+        return this;
     }
 
 
     public boolean hasGlue() {
         return glue;
     }
-    public boolean capitalized() {
+    public boolean isCapitalized() {
         return capitalization==CAPITAL;
     }
-    public boolean hasLowercase() {
+    public boolean isLowercased() {
         return capitalization==LOWER;
     }
     public boolean isAttachedStart() {

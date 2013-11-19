@@ -16,22 +16,47 @@ import java.util.List;
  */
 public class FormatterTest extends AndroidTestCase{
 
+    public void testBreakApart() throws Exception {
+        Formatter formatter = new Formatter();
+        List<String> result = formatter.breakApart("");
+        assertEquals(0, result.size());
+        result = formatter.breakApart("west");
+        assertEquals(1, result.size());
+        assertEquals("west", result.get(0));
+        result = formatter.breakApart("{x}");
+        assertEquals(1, result.size());
+        assertEquals("{x}", result.get(0));
+        result = formatter.breakApart("abc{DEF}g");
+        assertEquals(3, result.size());
+        assertEquals("abc", result.get(0));
+        assertEquals("{DEF}", result.get(1));
+        assertEquals("g", result.get(2));
+    }
+
     public void testFormat() throws Exception {
         Formatter formatter = new Formatter();
         List<Translation> none = new LinkedList<Translation>();
         assertNotNull(formatter);
         State state = new State();
         assertNotNull(state);
+        // plain word
         DisplayItem result = formatter.format(none, makeTranslation("All"), state);
         checkResult(result, 0, "All ");
-        result = formatter.format(none, makeTranslation("over"), state);
+
+        // undo
+        List<Translation> t1 = makeTranslation("over");
+        result = formatter.format(none, t1, state);
         checkResult(result, 0, "over ");
-        List<Translation> translation = makeTranslation("|-");
-        result = formatter.format(makeTranslation("over"), translation, state);
+        assertEquals(5, t1.get(0).getFormatting().getBackspaces());
+        assertFalse(t1.get(0).getFormatting().isCapitalized());
+
+        //capitalization
+        List<Translation> t2 = makeTranslation("{|-}");
+        result = formatter.format(t1, t2, state);
         checkResult(result, 5, "");
-        assertTrue(translation.get(0).getFormatting().capitalized());
+        assertTrue(t2.get(0).getFormatting().isCapitalized());
         state.setCapitalize();
-        result = formatter.format(none, makeTranslation("western"), state );
+        result = formatter.format(none, makeTranslation("western"), state);
         checkResult(result, 0, "Western ");
     }
 

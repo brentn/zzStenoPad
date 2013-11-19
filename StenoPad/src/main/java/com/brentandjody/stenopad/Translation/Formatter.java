@@ -41,41 +41,67 @@ public class Formatter {
         int bs = 0;
         for (String atom : breakApart(translation.english())) {
             if (atom.charAt(0) == '{') {
-                if (atom.equals("{|-}")) { formatting.setCapitalize(); atom=""; }
-                if (atom.equals("{>}")) { formatting.setLowercase(); atom=""; }
-                if (atom.charAt(1) == '&') { formatting.setGlue(); atom.replace("&", ""); }
-                if (atom.charAt(1) == '^') { formatting.attachStart(); atom.replace("{^", "{"); }
-                if (atom.charAt(atom.length()-2) == '^') { formatting.attachEnd(); atom.replace("^}", "}"); }
-                if (atom.equals("{#Return}")) { sb.append("\n"); atom=""; bs+=1; }
+                if (atom.equals("{|-}")) { formatting.setCapitalize().attachEnd(); atom=""; }
+                if (atom.equals("{>}")) { formatting.setLowercase().attachEnd(); atom=""; }
+                if (atom.equals("{^}")) { formatting.attachEnd().attachStart(); atom=""; }
+                if (atom.equals("{#Return}")) { sb.append("\n"); formatting.attachEnd(); atom=""; bs+=1; }
                 if (atom.equals("{#BackSpace}")) {sb.append("\b"); bs-=1; formatting.attachEnd(); atom=""; }
+                if (atom.length()>1 && atom.charAt(1) == '&') { formatting.setGlue(); atom.replace("&", ""); }
+                if (atom.length()>1 && atom.charAt(1) == '^') { formatting.attachStart(); atom.replace("{^", "{"); }
+                if (atom.length()>2 && atom.charAt(atom.length()-2) == '^') { formatting.attachEnd(); atom.replace("^}", "}"); }
             } else {
+                atom = atom.replaceAll("[\\{\\}]", "");
                 bs+=atom.length();
                 sb.append(atom);
             }
         }
-        if (!formatting.isAttachedEnd()) {
-            bs++;
-            sb.append(" ");
-        }
         formatting.addBackspaces(bs);
         translation.setFormatting(formatting);
+        String result = applyFormatting(priorState, formatting, sb.toString());
+        return result;
+    }
+
+    private String applyFormatting(State priorFormat, State format, String s) {
+        if ( s==null || s.isEmpty()) return "";
+        StringBuilder sb = new StringBuilder();
+        //deal with backspaces first
+        if (format.isAttachedStart()
+            || (priorFormat.hasGlue() && format.hasGlue())) {
+            sb.append("\b");
+        }
+        //deal with capitiaization
+        if (priorFormat.isCapitalized()) {
+            sb.append(s.substring(0,1).toUpperCase());
+            if (s.length() > 1) sb.append(s.substring(1));
+        }
+        if (priorFormat.isLowercased()) {
+            sb.append(s.substring(0,1).toLowerCase());
+            if (s.length() > 1) sb.append(s.substring(1));
+        }
+        if (sb.length()==0) sb.append(s);
+        //deal with space at end
+        if (!format.isAttachedEnd()) {
+            sb.append(" ");
+            format.addBackspaces(1);
+        }
         return sb.toString();
     }
 
-    private List<String> breakApart(String s) {
-        //break a translation string into atoms.
+    public List<String> breakApart(String s) {
+        //break a translation string into atoms. (recursive)
         List<String> result = new LinkedList<String>();
-        s = s.trim();
+        if (s == null || s.isEmpty()) return result;
         if ((s.contains("{") && s.contains("}"))) {
-            int start = s.indexOf('{');
+            int start = s.indexOf("{");
             if (start==0) { //first atom is {}
-                int end = s.indexOf('}');
+                int end = s.indexOf("}")+1; //substring is (] (exclusive at end)
                 result.add(s.substring(start,end));
-                if (end < (s.length()-1)) {
-                    result.addAll(breakApart(s.substring(end+1)));
+                if (end < s.length()) {
+                    result.addAll(breakApart(s.substring(end)));
                 }
             } else { // add text prior to {
-                result.add(s.substring(0, start-1));
+                result.add(s.substring(0, start));
+                result.addAll(breakApart(s.substring(start)));
             }
         } else {
             result.add(s);

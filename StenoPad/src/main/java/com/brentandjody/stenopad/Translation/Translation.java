@@ -24,6 +24,7 @@ public class Translation {
         // translation: a translation for the outline, or null
         strokes = outline;
         english = translation;
+        formatting = new State();
     }
 
     public Translation copy() {
