@@ -2,6 +2,8 @@ package com.brentandjody.stenopad.Translation.tests;
 
 import android.test.AndroidTestCase;
 
+import com.brentandjody.stenopad.Display.DisplayDevice;
+import com.brentandjody.stenopad.Display.DisplayItem;
 import com.brentandjody.stenopad.Translation.Dictionary;
 import com.brentandjody.stenopad.Translation.Stroke;
 import com.brentandjody.stenopad.Translation.Translation;
@@ -12,7 +14,7 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 
-public class TranslatorTest extends AndroidTestCase implements Translation.Display {
+public class TranslatorTest extends AndroidTestCase implements DisplayDevice.Display {
 
     private Dictionary dictionary;
     private Translator translator;
@@ -39,29 +41,29 @@ public class TranslatorTest extends AndroidTestCase implements Translation.Displ
         translator = new Translator(dictionary);
     }
 
-    public void update(List<Translation> undo, List<Translation> play, Translation state, String staging) {
-        if (undo != null) {
-            test_undo = new LinkedList<Translation>();
-            for (Translation t : undo) {
-                test_undo.add(t);
-            }
-        } else {
-            test_undo = null;
-        }
-        if (play != null) {
-            test_play = new LinkedList<Translation>();
-            for (Translation t : play) {
-                test_play.add(t);
-            }
-        } else {
-            test_play = null;
-        }
-        if (state!=null) {
-            test_state = state.copy();
-        } else {
-            test_state = null;
-        }
-        test_staging = staging;
+    public void update(DisplayItem item, String preview) {
+//        if (undo != null) {
+//            test_undo = new LinkedList<Translation>();
+//            for (Translation t : undo) {
+//                test_undo.add(t);
+//            }
+//        } else {
+//            test_undo = null;
+//        }
+//        if (play != null) {
+//            test_play = new LinkedList<Translation>();
+//            for (Translation t : play) {
+//                test_play.add(t);
+//            }
+//        } else {
+//            test_play = null;
+//        }
+//        if (state!=null) {
+//            test_state = state.copy();
+//        } else {
+//            test_state = null;
+//        }
+//        test_staging = staging;
     }
 
     public void testIsLoaded() throws Exception {

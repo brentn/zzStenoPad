@@ -14,11 +14,7 @@ public class Translation {
     private final String english;
     private State formatting;
 
-    public interface Display {
-        public void update(List<Translation> undo, List<Translation> play, Translation state, String staging);
-    }
-
-    @Override
+        @Override
     public String toString() {
         return "Translation(" + rtfcre() + " : " + english + ")";
     }

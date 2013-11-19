@@ -2,6 +2,7 @@ package com.brentandjody.stenopad.Translation;
 
 import android.content.Context;
 
+import com.brentandjody.stenopad.Display.DisplayDevice;
 import com.brentandjody.stenopad.Display.DisplayItem;
 
 import java.util.ArrayDeque;
@@ -42,7 +43,7 @@ public class Translator {
         history = new LimitedSizeDeque<Translation>(HISTORY_SIZE);
     }
 
-    public void translate(Stroke stroke, Translation.Display display) {
+    public void translate(Stroke stroke, DisplayDevice.Display display) {
         Translation translation;
         Translation last_translation=null;
         boolean last_translation_set = false;
@@ -112,7 +113,7 @@ public class Translator {
             if (!last_translation_set)
                 last_translation=history.peekLast();
             DisplayItem display_item = formatter.format(undo, play, last_translation.getFormatting());
-            display.update(undo, play, last_translation, wordsInQueue());
+            display.update(display_item, wordsInQueue());
             undo.clear();
             play.clear();
         }

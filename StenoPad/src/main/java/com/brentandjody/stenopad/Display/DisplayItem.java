@@ -8,13 +8,13 @@ public class DisplayItem {
 
     private int backspaces;
     private String text;
-    private String preview;
 
-    public DisplayItem(int bs, String txt, String pre) {
+
+    public DisplayItem(int bs, String txt) {
         backspaces = bs;
         text = txt;
-        preview = pre;
     }
+
 
     public int getBackspaces() {
         return backspaces;
@@ -24,7 +24,4 @@ public class DisplayItem {
         return text;
     }
 
-    public String getPreview() {
-        return preview;
-    }
 }

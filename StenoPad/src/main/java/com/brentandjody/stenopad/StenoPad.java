@@ -111,9 +111,6 @@ public class StenoPad extends Activity {
                 } else {
                     mSystemUiHider.show();
                 }
-
-                //TODO: remove this test
-                display.update("word ", "preview");
             }
         });
 

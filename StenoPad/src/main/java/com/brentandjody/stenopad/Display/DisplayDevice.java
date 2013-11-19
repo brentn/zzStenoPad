@@ -4,6 +4,8 @@ import android.graphics.Rect;
 import android.util.Log;
 import android.widget.TextView;
 
+import java.util.List;
+
 /**
  * Created by brent on 17/11/13.
  * Display translations to device, with preview (after the cursor) of what is currently in the queue
@@ -20,9 +22,14 @@ public class DisplayDevice {
         preview.setTextSize(text_size);
     }
 
-    public void update(String main_text, String preview_text) {
+    public interface Display {
+        public void update(DisplayItem displayItem, String preview);
+    }
+
+
+    public void update(DisplayItem item, String preview_text) {
         //append main_text to main, replace preview with preview_text
-        main.append(main_text);
+        main.append(item.getText());
         final int main_width = main.getWidth();
         preview.setText(preview_text);
         final int preview_width = preview.getMeasuredWidth();

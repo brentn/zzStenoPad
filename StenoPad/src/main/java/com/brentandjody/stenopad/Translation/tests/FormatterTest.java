@@ -18,20 +18,21 @@ public class FormatterTest extends AndroidTestCase{
 
     public void testFormat() throws Exception {
         Formatter formatter = new Formatter();
+        List<Translation> none = new LinkedList<Translation>();
         assertNotNull(formatter);
         State state = new State();
         assertNotNull(state);
-        DisplayItem result = formatter.format(null, makeTranslation("All"), state);
-        checkResult(result, 0, "All ", "");
-        result = formatter.format(null, makeTranslation("over"), state);
-        checkResult(result, 0, "over ", "");
+        DisplayItem result = formatter.format(none, makeTranslation("All"), state);
+        checkResult(result, 0, "All ");
+        result = formatter.format(none, makeTranslation("over"), state);
+        checkResult(result, 0, "over ");
         List<Translation> translation = makeTranslation("|-");
         result = formatter.format(makeTranslation("over"), translation, state);
-        checkResult(result, 5, "", "");
+        checkResult(result, 5, "");
         assertTrue(translation.get(0).getFormatting().capitalized());
         state.setCapitalize();
-        result = formatter.format(null, makeTranslation("western"), state );
-        checkResult(result, 0, "Western ", "");
+        result = formatter.format(none, makeTranslation("western"), state );
+        checkResult(result, 0, "Western ");
     }
 
     private List<Translation> makeTranslation(String english) {
@@ -41,9 +42,8 @@ public class FormatterTest extends AndroidTestCase{
         return result;
     }
 
-    private void checkResult(DisplayItem result, int bs, String txt, String pre) throws Exception {
+    private void checkResult(DisplayItem result, int bs, String txt) throws Exception {
         assertEquals(bs, result.getBackspaces());
         assertEquals(txt, result.getText());
-        assertEquals(pre, result.getPreview());
     }
 }

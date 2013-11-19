@@ -26,7 +26,7 @@ public class Formatter {
             sb.append(format(t, state));
             state=t.getFormatting();
         }
-        return new DisplayItem(backspaces, sb.toString(), "");
+        return new DisplayItem(backspaces, sb.toString());
     }
 
     private String format(Translation translation, State priorState) {
