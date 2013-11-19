@@ -1,8 +1,6 @@
 package com.brentandjody.stenopad.Translation;
 
 
-import java.util.List;
-
 /**
  * Created by brent on  13/11/13.
  * This is the main translation class
@@ -14,7 +12,7 @@ public class Translation {
     private final String english;
     private State formatting;
 
-        @Override
+    @Override
     public String toString() {
         return "Translation(" + rtfcre() + " : " + english + ")";
     }
@@ -25,12 +23,6 @@ public class Translation {
         strokes = outline;
         english = translation;
         formatting = new State();
-    }
-
-    public Translation copy() {
-        Translation duplicate = new Translation(strokes, english);
-        duplicate.setFormatting(formatting);
-        return duplicate;
     }
 
     public Stroke[] strokes() {

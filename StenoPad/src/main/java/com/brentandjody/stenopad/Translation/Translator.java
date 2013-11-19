@@ -104,18 +104,27 @@ public class Translator {
             }
             if (translation!= null) {
                 play.add(translation);
+                last_translation = getLastHistoryItem();
                 last_translation_set=true;
-                last_translation=history.peekLast();
                 history.add(translation);
             }
         }
         if (display != null) {
-            if (!last_translation_set)
-                last_translation=history.peekLast();
+            if (!last_translation_set) {
+                last_translation = getLastHistoryItem();
+            }
             DisplayItem display_item = formatter.format(undo, play, last_translation.getFormatting());
             display.update(display_item, wordsInQueue());
             undo.clear();
             play.clear();
+        }
+    }
+
+    private Translation getLastHistoryItem() {
+        if (history.isEmpty()) {
+            return new Translation(null, "");
+        } else {
+            return history.peekLast();
         }
     }
 
@@ -138,9 +147,9 @@ public class Translator {
         String result = dictionary.forceLookup(stroke);
         if (result == null)
             if (stroke!=null) {
-                return stroke;
+                result = stroke;
             } else {
-                return "";
+                result = "";
             }
         return result;
     }
