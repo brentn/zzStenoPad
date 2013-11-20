@@ -3,7 +3,6 @@ package com.brentandjody.stenopad.Translation;
 import android.content.Context;
 
 import com.brentandjody.stenopad.Display.DisplayDevice;
-import com.brentandjody.stenopad.Display.DisplayItem;
 
 import java.util.ArrayDeque;
 import java.util.Arrays;
@@ -23,8 +22,6 @@ public class Translator {
     private static final int HISTORY_SIZE = 50;
     private static final Set<String> SUFFIX_KEYS = new HashSet<String>() {{
         add("-S"); add("-G"); add("-Z"); add("-D"); }};
-    //TODO: if it has suffix, and is not found as is, find word without suffix and add it.
-
 
     private final Dictionary dictionary;
     private Deque<Stroke> strokeQ;
@@ -45,111 +42,107 @@ public class Translator {
     }
 
     public void translate(Stroke stroke, DisplayDevice.Display display) {
-        Translation translation;
-        Translation translation_2=null;
-        Translation last_translation=null;
-        boolean last_translation_set = false;
-        String lookup;
-        // process a single stroke
-        if (stroke.isCorrection()) {
-            if (! strokeQ.isEmpty()) {
-                strokeQ.removeLast();
-                if (strokeQ.isEmpty()) {
-                    replayHistoryItem();
-                }
-            } else {
-                if (! history.isEmpty()) {
-                    translation = history.removeLast();
-                    undo.add(translation);
-                    strokeQ.addAll(Arrays.asList(translation.strokes()));
-                    strokeQ.removeLast();
-                    if (strokeQ.isEmpty()) {
-                        replayHistoryItem();
-                    }
-                }
-            }
-        } else {
-            if (strokeQ.isEmpty()) {
-                lookup = dictionary.lookup(stroke.rtfcre());
-                if (lookup==null) { //not found
-                    translation = new Translation(stroke.asArray(), null);
-                } else {
-                    if (lookup.isEmpty()) { //ambiguous
-                        translation = null;
-                        strokeQ.add(stroke);
-                    } else { //deterministic
-                        translation = new Translation(stroke.asArray(), lookup);
-                    }
-                }
-            } else { //queue is not empty
-                lookup = dictionary.lookup(Stroke.combine(strokesInQueue()) + "/" + stroke.rtfcre());
-                if (lookup==null) { //queue/stroke not found
-                    Stroke[] subStroke = dictionary.longestValidStroke(Stroke.combine(strokesInQueue()));
-                    if (subStroke == null) { //valid stroke not found in queue
-                        lookup = dictionary.lookup(stroke.rtfcre());
-                        if (lookup == null) { //current stroke not found (not queue either)
-                            strokeQ.add(stroke);
-                            translation = new Translation(strokesInQueue(), Stroke.combine(strokesInQueue()));
-                            strokeQ.clear();
-                        } else { //current stroke found, but nothing valid in queue
-                            if (lookup.isEmpty()) { //queue not found, current stroke is ambiguous
-                                translation = new Translation(strokesInQueue(), Stroke.combine(strokesInQueue()));
-                                strokeQ.clear();
-                                strokeQ.add(stroke);
-                            } else { //queue not found, found stroke
-                                translation = new Translation(strokesInQueue(), Stroke.combine(strokesInQueue()));
-                                strokeQ.clear();
-                                translation_2 = new Translation(stroke.asArray(), lookup);
-                            }
-                        }
-                    } else { // valid subStroke found in queue
-                        lookup = dictionary.forceLookup(Stroke.combine(subStroke));
-                        translation = new Translation(subStroke, lookup);
-                        for (Stroke s : subStroke) {
-                            Stroke r = strokeQ.remove();
-                            if (! r.equals(s)) {
-                                System.err.print("Stroke in queue did not match stroke that was translated");
-                            }
-                        }
-                    }
-                } else { //queue/stroke combo found
-                    if (lookup.isEmpty()) { //ambiguous
-                        translation = null;
-                        strokeQ.add(stroke);
-                    } else { //deterministic
-                        strokeQ.add(stroke);
-                        translation = new Translation(strokesInQueue(), lookup);
-                        strokeQ.clear();
-                    }
-                }
-            }
-            if (translation!= null) {
-                play.add(translation);
-                last_translation = getLastHistoryItem();
-                last_translation_set=true;
-                history.add(translation);
-            }
-            if (translation_2!= null) {
-                play.add(translation_2);
-                history.add(translation_2);
-            }
-        }
+        State state = translate(stroke);
         if (display != null) {
-            if (!last_translation_set) {
-                last_translation = getLastHistoryItem();
-            }
-            DisplayItem display_item = formatter.format(undo, play, last_translation.getFormatting());
-            display.update(display_item, wordsInQueue());
+            display.update(formatter.format(undo, play, state), wordsInQueue());
             undo.clear();
             play.clear();
         }
     }
 
-    private Translation getLastHistoryItem() {
-        if (history.isEmpty()) {
-            return new Translation(null, "");
+    public State translate(Stroke s) {
+        State state = null;
+        Translation translation;
+        if (s.isCorrection()) {
+            processUndo();
+            state = getStateFromHistory();
         } else {
-            return history.peekLast();
+            // check queue+stroke first
+            String full_stroke;
+            if (strokeQ.isEmpty())
+                full_stroke = s.rtfcre();
+            else
+                full_stroke = Stroke.combine(strokesInQueue())+"/"+s.rtfcre();
+            String definition = dictionary.lookup(full_stroke);
+            if (found(definition)) {
+                if (ambiguous(definition)) {
+                    strokeQ.add(s);
+                } else { //not ambiguous
+                    translation = new Translation(full_stroke, definition);
+                    play.add(translation);
+                    state = getStateFromHistory();
+                    history.add(translation);
+                    strokeQ.clear();
+                }
+            } else { //full_stroke not found
+                if (!worksWithSuffix(full_stroke)) {
+                    if (strokeQ.isEmpty()) { //queue is empty, and last stroke not found
+                        translation = new Translation(s.asArray(), s.rtfcre()); // add RTF/CRE as text
+                        play.add(translation);
+                        state = getStateFromHistory();
+                        history.add(translation);
+                    } else { //still strokes in queue to try
+                        // reduce the queue by one stroke, and try again
+                        Stroke lastStroke = strokeQ.removeLast();
+                        translate(lastStroke);
+                        if (!strokeQ.isEmpty()) { //last stroke was ambiguous
+                            full_stroke = Stroke.combine(strokesInQueue());
+                            definition = dictionary.forceLookup(full_stroke);
+                            if (definition != null) {
+                                translation = new Translation(full_stroke, definition);
+                            } else { // can't find in dictionary
+                                translation = new Translation(full_stroke, full_stroke);
+                            }
+                            play.add(translation);
+                            state = getStateFromHistory();
+                            history.add(translation);
+                            strokeQ.clear();
+                        }
+                        translate(s);
+                    }
+                }
+            }
+        }
+        if (state == null) state = getStateFromHistory();
+        return state;
+    }
+
+    private void processUndo() {
+        if (strokeQ.isEmpty()) {
+            if (!history.isEmpty()) {
+                // put the strokes from last translation on the queue, and remove the final stroke
+                Translation translation = history.removeLast();
+                undo.add(translation);
+                strokeQ.addAll(Arrays.asList(translation.strokes()));
+                strokeQ.removeLast();
+            }
+        } else { //there are strokes in the queue
+            strokeQ.removeLast();
+        }
+        // replay the last item in history, to re-set the queue
+        if (strokeQ.isEmpty()) replayHistoryItem();
+    }
+
+    private boolean worksWithSuffix(String stroke) {
+     //TODO:    //TODO: if it has suffix, and is not found as is, find word without suffix and add it.
+        return false;
+    }
+
+    private boolean found(String lookup) {
+        //returns true if the string resulting from a lookup is not null
+        return lookup!=null;
+    }
+
+    private boolean ambiguous(String lookup) {
+        //returns true if the string resulting from alookup is empty
+        return (found(lookup) && lookup.isEmpty());
+    }
+
+    private State getStateFromHistory() {
+        if (history.isEmpty()) {
+            return new State();
+        } else {
+            return history.peekLast().getFormatting();
         }
     }
 
@@ -163,6 +156,7 @@ public class Translator {
     }
 
     private Stroke[] strokesInQueue() {
+        //return all the strokes in the queue as an array
         Stroke[] result = new Stroke[strokeQ.size()];
         return strokeQ.toArray(result);
     }

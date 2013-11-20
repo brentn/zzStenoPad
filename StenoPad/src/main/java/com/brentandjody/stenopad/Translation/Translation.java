@@ -17,6 +17,12 @@ public class Translation {
         return "Translation(" + rtfcre() + " : " + english + ")";
     }
 
+    public Translation(String outlineString, String translation) {
+        strokes = Stroke.separate(outlineString);
+        english = translation;
+        formatting = new State();
+    }
+
     public Translation(Stroke[] outline, String translation) {
         // outline: a series of stroke objects
         // translation: a translation for the outline, or null
