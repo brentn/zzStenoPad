@@ -58,6 +58,33 @@ public class FormatterTest extends AndroidTestCase{
         state.setCapitalize();
         result = formatter.format(none, makeTranslation("western"), state);
         checkResult(result, 0, "Western ");
+        state.setLowercase();
+        result = formatter.format(none, makeTranslation("Brent"), state);
+        checkResult(result, 0, "brent ");
+
+        //attachment
+        state.attachEnd();
+        result = formatter.format(none, makeTranslation("ararat"), state);
+        checkResult(result,1 , "ararat ");
+        state.attachStart();
+        result = formatter.format(none, makeTranslation("Bob Marley"), state);
+        checkResult(result, 1, "bob Marley ");
+        t1 = makeTranslation("twinkle");
+        t1.get(0).getFormatting().attachStart();
+        state = new State();
+        result = formatter.format(none, t1, state);
+        checkResult(result, 1, "twinkle ");
+        t1 = makeTranslation("left-handed");
+        state.setGlue();
+        result = formatter.format(none, t1, state);
+        checkResult(result, 0, "left-handed ");
+        t1 = makeTranslation("six-fingered");
+        t1.get(0).getFormatting().setGlue();
+        result = formatter.format(none, t1, state);
+        checkResult(result, 1, "six-fingered ");
+        state = new State();
+        result = formatter.format(none, t1 , state);
+        checkResult(result, 0, "six-fingered ");
     }
 
     private List<Translation> makeTranslation(String english) {

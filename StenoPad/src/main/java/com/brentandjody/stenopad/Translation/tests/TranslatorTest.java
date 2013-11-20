@@ -10,7 +10,6 @@ import com.brentandjody.stenopad.Translation.Translator;
 
 import java.util.concurrent.CountDownLatch;
 
-
 public class TranslatorTest extends AndroidTestCase implements DisplayDevice.Display {
 
     private Dictionary dictionary;
@@ -41,6 +40,7 @@ public class TranslatorTest extends AndroidTestCase implements DisplayDevice.Dis
     public void update(DisplayItem item, String preview) {
         backspaces = item.getBackspaces();
         text = item.getText();
+        this.preview = preview;
     }
 
     public void testIsLoaded() throws Exception {
@@ -52,10 +52,48 @@ public class TranslatorTest extends AndroidTestCase implements DisplayDevice.Dis
         assertEquals("", text);
         assertEquals("", preview);
         translator.translate(new Stroke("*"), this);
+        assertEquals(0, backspaces);
+        assertEquals("", text);
+        assertEquals("", preview);
         translator.translate(new Stroke("AD"), this);
+        assertEquals(0, backspaces);
+        assertEquals("", text);
+        assertEquals("AD", preview);
         translator.translate(new Stroke("SKWRAEUS"), this);
+        assertEquals(0, backspaces);
+        assertEquals("", text);
+        assertEquals("AD/SKWRAEUS", preview);
         translator.translate(new Stroke("EPBT"), this);
+        assertEquals(0, backspaces);
+        assertEquals("adjacent ", text);
+        assertEquals("", preview);
+        translator.translate(new Stroke("AD"), this);
+        assertEquals(0, backspaces);
+        assertEquals("", text);
+        assertEquals("AD", preview);
         translator.translate(new Stroke("SKWRAOUR"), this);
+        assertEquals(0, backspaces);
+        assertEquals("adjure ", text);
+        assertEquals("", preview);
+        translator.translate(new Stroke("*"), this);
+//TODO        assertEquals(7, backspaces);
+//        assertEquals("", text);
+//        assertEquals("AD", preview);
+        translator.translate(new Stroke("R-R"), this);
+//        assertEquals(4, backspaces);
+//        assertEquals("AD \n", text);
+        assertEquals("", preview);
+        translator.translate(new Stroke("AD"), this);
+        assertEquals(0, backspaces);
+        assertEquals("", text);
+        assertEquals("AD", preview);
+        translator.translate(new Stroke("SKWRUPLTS"), this);
+//        assertEquals("adjustments ", text);
+        assertEquals("", preview);
+        translator.translate(new Stroke("PW-FP"), this);
+        assertEquals(1, backspaces);
+        assertEquals("", text);
+        assertEquals("", preview);
         //TODO: more testing
     }
 }

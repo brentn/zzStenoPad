@@ -12,12 +12,14 @@ import java.util.List;
  */
 public class Formatter {
 
+    int backspaces;
+
     public Formatter() {
     }
 
     public DisplayItem format(Iterable<Translation> undo, Iterable<Translation> play, State state) {
         //Process play - and produce a DisplayItem
-        int backspaces = 0;
+        backspaces = 0;
         for (Translation t : undo) {
             backspaces+=t.getFormatting().getBackspaces();
         }
@@ -31,7 +33,7 @@ public class Formatter {
 
     private String format(Translation translation, State priorState) {
         //decodes and updates formatting for translation
-        State formatting = new State();
+        State formatting = translation.getFormatting();
         if (translation.english() == null) {
             formatting.addBackspaces(translation.rtfcre().length()+1);
             translation.setFormatting(formatting);
@@ -45,7 +47,7 @@ public class Formatter {
                 if (atom.equals("{>}")) { formatting.setLowercase().attachEnd(); atom=""; }
                 if (atom.equals("{^}")) { formatting.attachEnd().attachStart(); atom=""; }
                 if (atom.equals("{#Return}")) { sb.append("\n"); formatting.attachEnd(); atom=""; bs+=1; }
-                if (atom.equals("{#BackSpace}")) {sb.append("\b"); bs-=1; formatting.attachEnd(); atom=""; }
+                if (atom.equals("{#BackSpace}")) {backspaces++; bs-=1; formatting.attachEnd(); atom=""; }
                 if (atom.length()>1 && atom.charAt(1) == '&') { formatting.setGlue(); atom.replace("&", ""); }
                 if (atom.length()>1 && atom.charAt(1) == '^') { formatting.attachStart(); atom.replace("{^", "{"); }
                 if (atom.length()>2 && atom.charAt(atom.length()-2) == '^') { formatting.attachEnd(); atom.replace("^}", "}"); }
@@ -65,9 +67,9 @@ public class Formatter {
         if ( s==null || s.isEmpty()) return "";
         StringBuilder sb = new StringBuilder();
         //deal with backspaces first
-        if (format.isAttachedStart()
+        if (format.isAttachedStart() || priorFormat.isAttachedEnd()
             || (priorFormat.hasGlue() && format.hasGlue())) {
-            sb.append("\b");
+            backspaces++;
         }
         //deal with capitiaization
         if (priorFormat.isCapitalized()) {
