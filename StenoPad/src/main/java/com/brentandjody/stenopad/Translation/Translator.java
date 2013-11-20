@@ -6,6 +6,7 @@ import com.brentandjody.stenopad.Display.DisplayDevice;
 import com.brentandjody.stenopad.Display.DisplayItem;
 
 import java.util.ArrayDeque;
+import java.util.Arrays;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -45,6 +46,7 @@ public class Translator {
 
     public void translate(Stroke stroke, DisplayDevice.Display display) {
         Translation translation;
+        Translation translation_2=null;
         Translation last_translation=null;
         boolean last_translation_set = false;
         String lookup;
@@ -57,8 +59,13 @@ public class Translator {
                 }
             } else {
                 if (! history.isEmpty()) {
-                    undo.add(history.removeLast());
-                    replayHistoryItem();
+                    translation = history.removeLast();
+                    undo.add(translation);
+                    strokeQ.addAll(Arrays.asList(translation.strokes()));
+                    strokeQ.removeLast();
+                    if (strokeQ.isEmpty()) {
+                        replayHistoryItem();
+                    }
                 }
             }
         } else {
@@ -74,13 +81,28 @@ public class Translator {
                         translation = new Translation(stroke.asArray(), lookup);
                     }
                 }
-            } else {
+            } else { //queue is not empty
                 lookup = dictionary.lookup(Stroke.combine(strokesInQueue()) + "/" + stroke.rtfcre());
-                if (lookup==null) {
+                if (lookup==null) { //queue/stroke not found
                     Stroke[] subStroke = dictionary.longestValidStroke(Stroke.combine(strokesInQueue()));
-                    if (subStroke == null) {
-                        translation = new Translation(strokesInQueue(), Stroke.combine(strokesInQueue()));
-                    } else {
+                    if (subStroke == null) { //valid stroke not found in queue
+                        lookup = dictionary.lookup(stroke.rtfcre());
+                        if (lookup == null) { //current stroke not found (not queue either)
+                            strokeQ.add(stroke);
+                            translation = new Translation(strokesInQueue(), Stroke.combine(strokesInQueue()));
+                            strokeQ.clear();
+                        } else { //current stroke found, but nothing valid in queue
+                            if (lookup.isEmpty()) { //queue not found, current stroke is ambiguous
+                                translation = new Translation(strokesInQueue(), Stroke.combine(strokesInQueue()));
+                                strokeQ.clear();
+                                strokeQ.add(stroke);
+                            } else { //queue not found, found stroke
+                                translation = new Translation(strokesInQueue(), Stroke.combine(strokesInQueue()));
+                                strokeQ.clear();
+                                translation_2 = new Translation(stroke.asArray(), lookup);
+                            }
+                        }
+                    } else { // valid subStroke found in queue
                         lookup = dictionary.forceLookup(Stroke.combine(subStroke));
                         translation = new Translation(subStroke, lookup);
                         for (Stroke s : subStroke) {
@@ -90,8 +112,7 @@ public class Translator {
                             }
                         }
                     }
-                    strokeQ.add(stroke);
-                } else {
+                } else { //queue/stroke combo found
                     if (lookup.isEmpty()) { //ambiguous
                         translation = null;
                         strokeQ.add(stroke);
@@ -107,6 +128,10 @@ public class Translator {
                 last_translation = getLastHistoryItem();
                 last_translation_set=true;
                 history.add(translation);
+            }
+            if (translation_2!= null) {
+                play.add(translation_2);
+                history.add(translation_2);
             }
         }
         if (display != null) {

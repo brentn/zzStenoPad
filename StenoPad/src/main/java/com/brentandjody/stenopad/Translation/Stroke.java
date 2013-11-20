@@ -17,7 +17,7 @@ import java.util.Set;
 public class Stroke {
 
     private static final Set<String> IMPLICIT_HYPHENS = new HashSet<String>() {{
-        add("A-"); add("O-"); add("5-"); add("0-"); add("-E"); add("U"); add("*");
+        add("A-"); add("O-"); add("5-"); add("0-"); add("-E"); add("-U"); add("*");
     }};
     private static final HashMap<String,String> NUMBER_KEYS = new HashMap<String, String>() {{
         put("S-", "1-"); put("T-", "2-"); put("P-", "3-"); put("H-", "4-"); put("A-", "5-");
@@ -89,7 +89,7 @@ public class Stroke {
                             i++;
                             break;
                         }
-                        if (rightSide) { //if we have already had characters on the right, assume right side
+                        if (rightSide || keys.contains(input.charAt(i)+"-")) { //if we have already had characters on the right, or if we alredy have this letter on the left, assume right side
                             keys.add("-"+input.charAt(i));
                             break;
                         }
@@ -146,8 +146,7 @@ public class Stroke {
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof Stroke)) return false;
-        return this.rtfcre.equals(((Stroke) o).rtfcre());
+        return o instanceof Stroke && this.rtfcre.equals(((Stroke) o).rtfcre());
     }
 
     @Override

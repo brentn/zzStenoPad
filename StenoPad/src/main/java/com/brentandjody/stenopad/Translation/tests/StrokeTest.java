@@ -71,7 +71,6 @@ public class StrokeTest extends AndroidTestCase {
         Stroke s2 = new Stroke(new HashSet<String>() {{add("S-");add("P-"); add("H-"); add("T-");}});
         Stroke s3 = new Stroke(new HashSet<String>() {{add("S-");add("T-"); add("P-"); add("H-"); add("-R");}});
         assertTrue(s1.equals(s1));
-        assertFalse(s2.equals(null));
         assertTrue(s1.equals(s2));
         assertTrue(s2.equals(s1));
         assertFalse(s2.equals(s3));
@@ -92,6 +91,8 @@ public class StrokeTest extends AndroidTestCase {
         assertEquals("ES", Stroke.normalize("-ES"));
         assertEquals("TWEPBL", Stroke.normalize("TW-EPBL"));
         assertEquals("TWEPBL", Stroke.normalize("TWEPBL"));
+        assertEquals("R-R", Stroke.normalize("R-R"));
+        assertEquals("SKWRUPLTS", Stroke.normalize("SKWRUPLTS"));
     }
 
     public void testSteno() throws Exception {
