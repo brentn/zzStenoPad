@@ -3,6 +3,6 @@
 
     <string name="app_name">Steno Pad</string>
     <string name="dummy_button">Dummy Button</string>
-    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string><string name="loading_dictionary">Loading dictionary...</string>
 
 </resources>

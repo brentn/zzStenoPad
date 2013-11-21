@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -98,7 +99,7 @@ public class Stroke {
                     } // else invalid key
             }
         }
-        return new HashSet<String>(keys);
+        return new LinkedHashSet<String>(keys);
     }
 
     private String raw;

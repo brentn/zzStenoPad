@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.brentandjody.stenopad.Input.SoftKeyboard.TouchLayer xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:clickable="true"
@@ -14,401 +14,471 @@
         android:background="@android:color/transparent"
         android:id="@+id/input_area"></FrameLayout>
 
-    <ScrollView
+    <RelativeLayout
+        android:layout_height="100dp"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/candidates_area"
-        android:background="@android:color/background_dark"
-        android:paddingTop="2dp"
-        android:paddingBottom="2dp"
-        android:paddingRight="10dp"
-        android:paddingLeft="10dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Medium Text"
-            android:id="@+id/textView"
-            android:background="@android:color/background_dark"
-            android:textColor="@android:color/holo_blue_light" />
-    </ScrollView>
-
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="fill_parent"
-        android:layout_height="0dp"
-        android:id="@+id/top_bank"
         android:layout_weight="1"
-        android:background="@android:color/darker_gray"
-        android:paddingTop="7dp">
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="fill_parent"
-            android:text="S"
-            android:id="@+id/S"
-            android:gravity="center_vertical|center_horizontal"
-            android:layout_weight="1"
-            android:background="@drawable/key"
-            android:layout_marginRight="2dp"
-            android:layout_marginLeft="2dp"
-            android:layout_marginTop="-5dp" />
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="fill_parent"
-            android:text="T"
-            android:id="@+id/T"
-            android:gravity="center_vertical|center_horizontal"
-            android:layout_weight="1"
-            android:background="@drawable/key"
-            android:layout_marginLeft="2dp"
-            android:layout_marginRight="2dp"
-            android:layout_marginTop="-5dp" />
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="fill_parent"
-            android:text="P"
-            android:id="@+id/P"
-            android:gravity="center_vertical|center_horizontal"
-            android:layout_weight="1"
-            android:background="@drawable/key"
-            android:layout_marginRight="2dp"
-            android:layout_marginLeft="2dp"
-            android:layout_marginTop="-5dp" />
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="fill_parent"
-            android:text="H"
-            android:id="@+id/H"
-            android:gravity="center_vertical|center_horizontal"
-            android:layout_weight="1"
-            android:background="@drawable/key"
-            android:phoneNumber="true"
-            android:layout_marginLeft="2dp"
-            android:layout_marginRight="2dp"
-            android:layout_marginTop="-5dp" />
+        android:clickable="false">
 
         <LinearLayout
             android:orientation="vertical"
-            android:layout_width="0dp"
+            android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:layout_weight="5"
-            android:id="@+id/special_keys">
+            android:id="@+id/keyboard">
+
+            <ScrollView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/candidates_area"
+                android:background="@android:color/background_dark"
+                android:paddingTop="2dp"
+                android:paddingBottom="2dp"
+                android:paddingRight="10dp"
+                android:paddingLeft="10dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="Medium Text"
+                    android:id="@+id/textView"
+                    android:background="@android:color/background_dark"
+                    android:textColor="@android:color/holo_blue_light" />
+            </ScrollView>
 
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="fill_parent"
                 android:layout_height="0dp"
-                android:layout_weight="5">
+                android:id="@+id/top_bank"
+                android:layout_weight="1"
+                android:background="@android:color/darker_gray"
+                android:paddingTop="7dp">
 
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="fill_parent"
-                    android:text="#"
-                    android:id="@+id/num"
+                    android:text="S"
+                    android:id="@+id/S2"
                     android:gravity="center_vertical|center_horizontal"
                     android:layout_weight="1"
                     android:background="@drawable/key"
                     android:layout_marginRight="2dp"
                     android:layout_marginLeft="2dp"
-                    android:layout_marginTop="-5dp" />
-
-                <FrameLayout
-                    android:layout_width="0dp"
-                    android:layout_height="fill_parent"
-                    android:layout_weight="3" >
-
-                    <Button
-                        style="?android:attr/buttonStyleSmall"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="..."
-                        android:id="@+id/settings"
-                        android:layout_gravity="center_horizontal|top" />
-                </FrameLayout>
+                    android:layout_marginTop="-5dp"
+                    android:hint="S-" />
 
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="fill_parent"
-                    android:text="*"
-                    android:id="@+id/star"
+                    android:text="T"
+                    android:id="@+id/T"
+                    android:gravity="center_vertical|center_horizontal"
+                    android:layout_weight="1"
+                    android:background="@drawable/key"
+                    android:layout_marginLeft="2dp"
+                    android:layout_marginRight="2dp"
+                    android:layout_marginTop="-5dp"
+                    android:hint="T-" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:text="P"
+                    android:id="@+id/P"
                     android:gravity="center_vertical|center_horizontal"
                     android:layout_weight="1"
                     android:background="@drawable/key"
                     android:layout_marginRight="2dp"
                     android:layout_marginLeft="2dp"
-                    android:linksClickable="true"
-                    android:layout_marginTop="-5dp" />
+                    android:layout_marginTop="-5dp"
+                    android:hint="P-" />
 
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:text="H"
+                    android:id="@+id/H"
+                    android:gravity="center_vertical|center_horizontal"
+                    android:layout_weight="1"
+                    android:background="@drawable/key"
+                    android:phoneNumber="true"
+                    android:layout_marginLeft="2dp"
+                    android:layout_marginRight="2dp"
+                    android:layout_marginTop="-5dp"
+                    android:hint="H-" />
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="5"
+                    android:id="@+id/special_keys">
+
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="fill_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="5">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="fill_parent"
+                            android:text="#"
+                            android:id="@+id/num"
+                            android:gravity="center_vertical|center_horizontal"
+                            android:layout_weight="1"
+                            android:background="@drawable/key"
+                            android:layout_marginRight="2dp"
+                            android:layout_marginLeft="2dp"
+                            android:layout_marginTop="-5dp"
+                            android:hint="#" />
+
+                        <FrameLayout
+                            android:layout_width="0dp"
+                            android:layout_height="fill_parent"
+                            android:layout_weight="3" >
+
+                            <Button
+                                style="?android:attr/buttonStyleSmall"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="..."
+                                android:id="@+id/settings"
+                                android:layout_gravity="center_horizontal|top" />
+                        </FrameLayout>
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="fill_parent"
+                            android:text="*"
+                            android:id="@+id/star"
+                            android:gravity="center_vertical|center_horizontal"
+                            android:layout_weight="1"
+                            android:background="@drawable/key"
+                            android:layout_marginRight="2dp"
+                            android:layout_marginLeft="2dp"
+                            android:linksClickable="true"
+                            android:layout_marginTop="-5dp"
+                            android:hint="*" />
+
+                    </LinearLayout>
+
+                    <FrameLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"></FrameLayout>
+
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:text="F"
+                    android:id="@+id/f"
+                    android:gravity="center_vertical|center_horizontal"
+                    android:layout_weight="1"
+                    android:background="@drawable/key"
+                    android:layout_marginRight="2dp"
+                    android:layout_marginLeft="2dp"
+                    android:layout_marginTop="-5dp"
+                    android:hint="-F" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:text="P"
+                    android:id="@+id/p"
+                    android:gravity="center_vertical|center_horizontal"
+                    android:layout_weight="1"
+                    android:background="@drawable/key"
+                    android:layout_marginLeft="2dp"
+                    android:layout_marginRight="2dp"
+                    android:layout_marginTop="-5dp"
+                    android:hint="-P" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:text="L"
+                    android:id="@+id/l"
+                    android:gravity="center_vertical|center_horizontal"
+                    android:layout_weight="1"
+                    android:background="@drawable/key"
+                    android:layout_marginRight="2dp"
+                    android:layout_marginLeft="2dp"
+                    android:layout_marginTop="-5dp"
+                    android:hint="-L" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:text="T"
+                    android:id="@+id/t"
+                    android:gravity="center_vertical|center_horizontal"
+                    android:layout_weight="1"
+                    android:background="@drawable/key"
+                    android:phoneNumber="true"
+                    android:layout_marginLeft="2dp"
+                    android:layout_marginRight="2dp"
+                    android:layout_marginTop="-5dp"
+                    android:hint="-T" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:text="D"
+                    android:id="@+id/d"
+                    android:gravity="center_vertical|center_horizontal"
+                    android:layout_weight="1"
+                    android:background="@drawable/key"
+                    android:phoneNumber="true"
+                    android:layout_marginLeft="2dp"
+                    android:layout_marginRight="2dp"
+                    android:layout_marginTop="-5dp"
+                    android:hint="-D" />
             </LinearLayout>
 
             <FrameLayout
                 android:layout_width="fill_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"></FrameLayout>
-
-        </LinearLayout>
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="fill_parent"
-            android:text="F"
-            android:id="@+id/f"
-            android:gravity="center_vertical|center_horizontal"
-            android:layout_weight="1"
-            android:background="@drawable/key"
-            android:layout_marginRight="2dp"
-            android:layout_marginLeft="2dp"
-            android:layout_marginTop="-5dp" />
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="fill_parent"
-            android:text="P"
-            android:id="@+id/p"
-            android:gravity="center_vertical|center_horizontal"
-            android:layout_weight="1"
-            android:background="@drawable/key"
-            android:layout_marginLeft="2dp"
-            android:layout_marginRight="2dp"
-            android:layout_marginTop="-5dp" />
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="fill_parent"
-            android:text="L"
-            android:id="@+id/l"
-            android:gravity="center_vertical|center_horizontal"
-            android:layout_weight="1"
-            android:background="@drawable/key"
-            android:layout_marginRight="2dp"
-            android:layout_marginLeft="2dp"
-            android:layout_marginTop="-5dp" />
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="fill_parent"
-            android:text="T"
-            android:id="@+id/t"
-            android:gravity="center_vertical|center_horizontal"
-            android:layout_weight="1"
-            android:background="@drawable/key"
-            android:phoneNumber="true"
-            android:layout_marginLeft="2dp"
-            android:layout_marginRight="2dp"
-            android:layout_marginTop="-5dp" />
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="fill_parent"
-            android:text="D"
-            android:id="@+id/d"
-            android:gravity="center_vertical|center_horizontal"
-            android:layout_weight="1"
-            android:background="@drawable/key"
-            android:phoneNumber="true"
-            android:layout_marginLeft="2dp"
-            android:layout_marginRight="2dp"
-            android:layout_marginTop="-5dp" />
-    </LinearLayout>
-
-    <FrameLayout
-        android:layout_width="fill_parent"
-        android:layout_height="40dp"
-        android:id="@+id/gutter"
-        android:background="@android:color/darker_gray"></FrameLayout>
-
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="fill_parent"
-        android:layout_height="0dp"
-        android:id="@+id/bottom_bank"
-        android:layout_weight="1"
-        android:background="@android:color/darker_gray">
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="fill_parent"
-            android:text="S"
-            android:id="@+id/S"
-            android:gravity="center_vertical|center_horizontal"
-            android:layout_weight="1"
-            android:background="@drawable/key"
-            android:layout_marginLeft="2dp"
-            android:layout_marginRight="2dp"
-            android:layout_marginBottom="-5dp" />
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="fill_parent"
-            android:text="K"
-            android:id="@+id/K"
-            android:gravity="center_vertical|center_horizontal"
-            android:layout_weight="1"
-            android:background="@drawable/key"
-            android:layout_marginLeft="2dp"
-            android:layout_marginRight="2dp"
-            android:layout_marginBottom="-5dp" />
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="fill_parent"
-            android:text="W"
-            android:id="@+id/W"
-            android:gravity="center_vertical|center_horizontal"
-            android:layout_weight="1"
-            android:background="@drawable/key"
-            android:layout_marginLeft="2dp"
-            android:layout_marginRight="2dp"
-            android:layout_marginBottom="-5dp" />
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="fill_parent"
-            android:text="R"
-            android:id="@+id/R"
-            android:gravity="center_vertical|center_horizontal"
-            android:layout_weight="1"
-            android:background="@drawable/key"
-            android:layout_marginLeft="2dp"
-            android:layout_marginRight="2dp"
-            android:layout_marginBottom="-5dp" />
-
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="0dp"
-            android:layout_height="fill_parent"
-            android:layout_weight="5"
-            android:id="@+id/thumbs">
-
-            <FrameLayout
-                android:layout_width="fill_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"></FrameLayout>
+                android:layout_height="40dp"
+                android:id="@+id/gutter"
+                android:background="@android:color/darker_gray"></FrameLayout>
 
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="fill_parent"
                 android:layout_height="0dp"
-                android:layout_weight="5"
-                android:id="@+id/vowel_bank" >
+                android:id="@+id/bottom_bank"
+                android:layout_weight="1"
+                android:background="@android:color/darker_gray">
 
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="fill_parent"
-                    android:text="A"
-                    android:id="@+id/A"
+                    android:text="S"
+                    android:id="@+id/S"
                     android:gravity="center_vertical|center_horizontal"
                     android:layout_weight="1"
-                    android:background="@drawable/vowel_key"
-                    android:layout_marginLeft="3dp"
-                    android:layout_marginRight="3dp"
-                    android:layout_marginBottom="-5dp" />
+                    android:background="@drawable/key"
+                    android:layout_marginLeft="2dp"
+                    android:layout_marginRight="2dp"
+                    android:layout_marginBottom="-5dp"
+                    android:hint="S-" />
 
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="fill_parent"
-                    android:text="O"
-                    android:id="@+id/O"
+                    android:text="K"
+                    android:id="@+id/K"
                     android:gravity="center_vertical|center_horizontal"
                     android:layout_weight="1"
-                    android:background="@drawable/vowel_key"
-                    android:layout_marginLeft="3dp"
-                    android:layout_marginRight="3dp"
-                    android:layout_marginBottom="-5dp" />
+                    android:background="@drawable/key"
+                    android:layout_marginLeft="2dp"
+                    android:layout_marginRight="2dp"
+                    android:layout_marginBottom="-5dp"
+                    android:hint="K-" />
 
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="fill_parent"
-                    android:text="E"
-                    android:id="@+id/e"
+                    android:text="W"
+                    android:id="@+id/W"
                     android:gravity="center_vertical|center_horizontal"
                     android:layout_weight="1"
-                    android:background="@drawable/vowel_key"
-                    android:layout_marginLeft="3dp"
-                    android:layout_marginRight="3dp"
-                    android:layout_marginBottom="-5dp" />
+                    android:background="@drawable/key"
+                    android:layout_marginLeft="2dp"
+                    android:layout_marginRight="2dp"
+                    android:layout_marginBottom="-5dp"
+                    android:hint="W-" />
 
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="fill_parent"
-                    android:text="U"
-                    android:id="@+id/u"
+                    android:text="R"
+                    android:id="@+id/R"
                     android:gravity="center_vertical|center_horizontal"
                     android:layout_weight="1"
-                    android:background="@drawable/vowel_key"
-                    android:layout_marginLeft="3dp"
-                    android:layout_marginRight="3dp"
-                    android:layout_marginBottom="-5dp" />
+                    android:background="@drawable/key"
+                    android:layout_marginLeft="2dp"
+                    android:layout_marginRight="2dp"
+                    android:layout_marginBottom="-5dp"
+                    android:hint="R-" />
 
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="5"
+                    android:id="@+id/thumbs">
+
+                    <FrameLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"></FrameLayout>
+
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="fill_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="5"
+                        android:id="@+id/vowel_bank" >
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="fill_parent"
+                            android:text="A"
+                            android:id="@+id/A"
+                            android:gravity="center_vertical|center_horizontal"
+                            android:layout_weight="1"
+                            android:background="@drawable/vowel_key"
+                            android:layout_marginLeft="3dp"
+                            android:layout_marginRight="3dp"
+                            android:layout_marginBottom="-5dp"
+                            android:hint="A-" />
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="fill_parent"
+                            android:text="O"
+                            android:id="@+id/O"
+                            android:gravity="center_vertical|center_horizontal"
+                            android:layout_weight="1"
+                            android:background="@drawable/vowel_key"
+                            android:layout_marginLeft="3dp"
+                            android:layout_marginRight="3dp"
+                            android:layout_marginBottom="-5dp"
+                            android:hint="O-" />
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="fill_parent"
+                            android:text="E"
+                            android:id="@+id/e"
+                            android:gravity="center_vertical|center_horizontal"
+                            android:layout_weight="1"
+                            android:background="@drawable/vowel_key"
+                            android:layout_marginLeft="3dp"
+                            android:layout_marginRight="3dp"
+                            android:layout_marginBottom="-5dp"
+                            android:hint="-E" />
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="fill_parent"
+                            android:text="U"
+                            android:id="@+id/u"
+                            android:gravity="center_vertical|center_horizontal"
+                            android:layout_weight="1"
+                            android:background="@drawable/vowel_key"
+                            android:layout_marginLeft="3dp"
+                            android:layout_marginRight="3dp"
+                            android:layout_marginBottom="-5dp"
+                            android:hint="-U"
+                            android:focusableInTouchMode="false" />
+
+                    </LinearLayout>
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:text="R"
+                    android:id="@+id/r"
+                    android:gravity="center_vertical|center_horizontal"
+                    android:layout_weight="1"
+                    android:background="@drawable/key"
+                    android:layout_marginRight="2dp"
+                    android:layout_marginLeft="2dp"
+                    android:layout_marginBottom="-5dp"
+                    android:hint="-R" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:text="B"
+                    android:id="@+id/b"
+                    android:gravity="center_vertical|center_horizontal"
+                    android:layout_weight="1"
+                    android:background="@drawable/key"
+                    android:layout_marginLeft="2dp"
+                    android:layout_marginRight="2dp"
+                    android:layout_marginBottom="-5dp"
+                    android:hint="-B" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:text="G"
+                    android:id="@+id/g"
+                    android:gravity="center_vertical|center_horizontal"
+                    android:layout_weight="1"
+                    android:background="@drawable/key"
+                    android:layout_marginRight="2dp"
+                    android:layout_marginLeft="2dp"
+                    android:layout_marginBottom="-5dp"
+                    android:hint="-G" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:text="S"
+                    android:id="@+id/s"
+                    android:gravity="center_vertical|center_horizontal"
+                    android:layout_weight="1"
+                    android:background="@drawable/key"
+                    android:phoneNumber="true"
+                    android:layout_marginLeft="2dp"
+                    android:layout_marginRight="2dp"
+                    android:layout_marginBottom="-5dp"
+                    android:hint="-S" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:text="Z"
+                    android:id="@+id/z"
+                    android:gravity="center_vertical|center_horizontal"
+                    android:layout_weight="1"
+                    android:background="@drawable/key"
+                    android:phoneNumber="true"
+                    android:layout_marginLeft="2dp"
+                    android:layout_marginRight="2dp"
+                    android:layout_marginBottom="-5dp"
+                    android:hint="-Z" />
             </LinearLayout>
         </LinearLayout>
 
-        <TextView
-            android:layout_width="0dp"
+        <FrameLayout
+            android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:text="R"
-            android:id="@+id/r"
-            android:gravity="center_vertical|center_horizontal"
-            android:layout_weight="1"
-            android:background="@drawable/key"
-            android:layout_marginRight="2dp"
-            android:layout_marginLeft="2dp"
-            android:layout_marginBottom="-5dp" />
+            android:background="#FFF"
+            android:clickable="true"
+            android:id="@+id/ovelay"
+            android:alpha=".5"
+            android:visibility="invisible">
 
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="fill_parent"
-            android:text="B"
-            android:id="@+id/b"
-            android:gravity="center_vertical|center_horizontal"
-            android:layout_weight="1"
-            android:background="@drawable/key"
-            android:layout_marginLeft="2dp"
-            android:layout_marginRight="2dp"
-            android:layout_marginBottom="-5dp" />
+            <ProgressBar
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/progressBar"
+                android:layout_gravity="center"
+                android:minWidth="250dp"
+                android:minHeight="15dp"
+                android:layout_marginTop="20dp" />
 
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="fill_parent"
-            android:text="G"
-            android:id="@+id/g"
-            android:gravity="center_vertical|center_horizontal"
-            android:layout_weight="1"
-            android:background="@drawable/key"
-            android:layout_marginRight="2dp"
-            android:layout_marginLeft="2dp"
-            android:layout_marginBottom="-5dp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/loading_dictionary"
+                android:id="@+id/loading_text"
+                android:textAlignment="center"
+                android:layout_gravity="center"
+                android:layout_marginTop="4dp" />
+        </FrameLayout>
 
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="fill_parent"
-            android:text="S"
-            android:id="@+id/s"
-            android:gravity="center_vertical|center_horizontal"
-            android:layout_weight="1"
-            android:background="@drawable/key"
-            android:phoneNumber="true"
-            android:layout_marginLeft="2dp"
-            android:layout_marginRight="2dp"
-            android:layout_marginBottom="-5dp" />
+    </RelativeLayout>
 
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="fill_parent"
-            android:text="Z"
-            android:id="@+id/z"
-            android:gravity="center_vertical|center_horizontal"
-            android:layout_weight="1"
-            android:background="@drawable/key"
-            android:phoneNumber="true"
-            android:layout_marginLeft="2dp"
-            android:layout_marginRight="2dp"
-            android:layout_marginBottom="-5dp" />
-    </LinearLayout>
-
-</LinearLayout>
+</com.brentandjody.stenopad.Input.SoftKeyboard.TouchLayer>
