@@ -1,7 +1,7 @@
 package com.brentandjody.stenopad;
 
 import com.brentandjody.stenopad.Display.DisplayDevice;
-import com.brentandjody.stenopad.Input.InputDevice;
+import com.brentandjody.stenopad.Input.InputProtocol;
 import com.brentandjody.stenopad.Input.USBInputDevice;
 import com.brentandjody.stenopad.Translation.Translator;
 import com.brentandjody.stenopad.util.SystemUiHider;
@@ -38,7 +38,7 @@ public class StenoPad extends Activity {
     private SystemUiHider mSystemUiHider;
 
     Translator translator;
-    InputDevice keyboard;
+    InputProtocol keyboard;
     DisplayDevice display;
 
     @Override

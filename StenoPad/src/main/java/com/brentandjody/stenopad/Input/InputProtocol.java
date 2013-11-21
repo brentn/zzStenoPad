@@ -6,12 +6,9 @@ import java.util.Set;
 /**
  * Created by brent on 17/11/13.
  */
-public abstract class InputDevice {
+public abstract class InputProtocol {
 
-    private Boolean connected = false;
-    private Boolean running = false;
-
-    public InputDevice() {
+    public InputProtocol() {
     }
 
     private OnStrokeCompleteListener onStrokeCompleteListener;
