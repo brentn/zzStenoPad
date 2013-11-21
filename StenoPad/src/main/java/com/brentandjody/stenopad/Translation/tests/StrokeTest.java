@@ -85,14 +85,14 @@ public class StrokeTest extends AndroidTestCase {
     }
 
     public void testNormalize() throws Exception {
-        assertEquals("S", Stroke.normalize("S"));
-        assertEquals("S", Stroke.normalize("S-"));
-        assertEquals("ES", Stroke.normalize("ES"));
-        assertEquals("ES", Stroke.normalize("-ES"));
-        assertEquals("TWEPBL", Stroke.normalize("TW-EPBL"));
-        assertEquals("TWEPBL", Stroke.normalize("TWEPBL"));
-        assertEquals("R-R", Stroke.normalize("R-R"));
-        assertEquals("SKWRUPLTS", Stroke.normalize("SKWRUPLTS"));
+        assertEquals("S", new Stroke(Stroke.normalize("S")).rtfcre());
+        assertEquals("S", new Stroke(Stroke.normalize("S-")).rtfcre());
+        assertEquals("ES", new Stroke(Stroke.normalize("ES")).rtfcre());
+        assertEquals("ES", new Stroke(Stroke.normalize("-ES")).rtfcre());
+        assertEquals("TWEPBL", new Stroke(Stroke.normalize("TW-EPBL")).rtfcre());
+        assertEquals("TWEPBL", new Stroke(Stroke.normalize("TWEPBL")).rtfcre());
+        assertEquals("R-R", new Stroke(Stroke.normalize("R-R")).rtfcre());
+        assertEquals("SKWRUPLTS", new Stroke(Stroke.normalize("SKWRUPLTS")).rtfcre());
     }
 
     public void testSteno() throws Exception {

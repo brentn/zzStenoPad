@@ -1,6 +1,8 @@
 package com.brentandjody.stenopad.Translation;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -19,16 +21,12 @@ public class Stroke {
     private static final Set<String> IMPLICIT_HYPHENS = new HashSet<String>() {{
         add("A-"); add("O-"); add("5-"); add("0-"); add("-E"); add("-U"); add("*");
     }};
-    private static final HashMap<String,String> NUMBER_KEYS = new HashMap<String, String>() {{
+    private static final HashMap<String,String> NUMBER_KEYS = new LinkedHashMap<String, String>() {{
         put("S-", "1-"); put("T-", "2-"); put("P-", "3-"); put("H-", "4-"); put("A-", "5-");
         put("O-", "0-"); put("-F", "-6"); put("-P", "-7"); put("-L", "-8"); put("-T", "-9");
     }};
-    private static final HashMap<String, Integer> STENO_KEYS = new LinkedHashMap<String, Integer>() {{
-        put("#", 0); put("S-", 1); put("T-", 2); put("K-", 3); put("P-", 4); put("W-", 5); put("H-", 6);
-        put("R-", 7); put("A-", 8); put("O-", 9); put("*", 10); put("-E", 11); put("-U", 12);
-        put("-F", 13); put("-R", 14); put("-P", 15); put("-B", 16); put("-L", 17); put("-G", 18);
-        put("-T", 19); put("-S", 20); put("-D", 21); put("-Z", 22);
-    }};
+    private static final List<String> STENO_KEYS = new LinkedList<String>(Arrays.asList("#", "S-","T-","K-",
+            "P-","W-","H-","R-","A-","O-","*","-E","-U","-F","-R","-P","-B","-L","-G","-T","-S","-D","-Z"));
 
     public static String combine(Stroke[] strokes) {
         if (strokes == null || strokes.length == 0) return "";
@@ -54,8 +52,9 @@ public class Stroke {
     }
 
 
-    public static String normalize(String input) {
+    public static Set<String> normalize(String input) {
         List<String> keys = new ArrayList<String>();
+        boolean single_hyphen = (input.contains("-") && (input.indexOf("-") == input.lastIndexOf("-")));
         boolean rightSide = false;
         for (int i=0; i<input.length(); i++) {
             switch (input.charAt(i)) {
@@ -64,6 +63,7 @@ public class Stroke {
                 case '*':keys.add("*");
                     break;
                 case '-':
+                    if (single_hyphen) rightSide=true; //if there is only 1 hyphen, use it to distinguish right/left
                     if (i < (input.length()-1)) {
                         rightSide=true;
                         keys.add("-"+input.charAt(i+1));
@@ -78,15 +78,15 @@ public class Stroke {
                 case 'K':case 'W':case 'H':case 'A':case 'O':
                     //keys that only exist on the left side
                     keys.add(input.charAt(i)+"-");
-                    if ((i < (input.length()-1)) && (input.charAt(i+1) == '-'))
+                    if ((i < (input.length()-1)) && (input.charAt(i+1) == '-') && (!single_hyphen))
                         i++;
                     break;
                 default:
                     // these keys exist on both sides, or are invalid
                     if ("STPR".indexOf(input.charAt(i))>=0) {
-                        if ((i < (input.length()-1)) && (input.charAt(i+1) == '-')) {
+                        if ((i < (input.length()-1)) && (input.charAt(i+1) == '-')) { //is the next char a hyphen?
                             keys.add(input.charAt(i)+"-");
-                            i++;
+                            if (!single_hyphen) i++;
                             break;
                         }
                         if (rightSide || keys.contains(input.charAt(i)+"-")) { //if we have already had characters on the right, or if we alredy have this letter on the left, assume right side
@@ -98,23 +98,23 @@ public class Stroke {
                     } // else invalid key
             }
         }
-        Set keyset = new HashSet<String>(keys);
-        Stroke converted = new Stroke(keyset);
-        return converted.rtfcre;
+        return new HashSet<String>(keys);
     }
 
     private String raw;
-    private final String rtfcre;
+    private Set<String> keys;
+    private String rtfcre;
     private final boolean isCorrection;
 
     public Stroke(Set<String> keys) {
         //sort and remove invalid and duplicate keys
+        this.keys = keys;
         raw = "";
         for (String k : keys) {
             raw += k;
         }
         List<String> stroke_keys= new LinkedList<String>();
-        for (String key : STENO_KEYS.keySet()) {
+        for (String key : STENO_KEYS) {
             if (keys.contains(key)) {
                 stroke_keys.add(key);
             }
@@ -126,12 +126,22 @@ public class Stroke {
     public Stroke(String keyString) {
         raw=keyString;
         keyString = keyString.split("/")[0];
-        rtfcre=normalize(keyString);
+        keys = normalize(keyString);
+        rtfcre = constructStroke(convertNumbers(keys));
         isCorrection = (rtfcre.equals("*"));
     }
 
     public String rtfcre() {
         return rtfcre;
+    }
+
+    public Set<String> keys() {
+        return keys;
+    }
+
+    public void removeKey(String k) {
+        keys.remove(k);
+        rtfcre = constructStroke(convertNumbers(keys));
     }
 
     public Stroke[] asArray() {
@@ -157,9 +167,9 @@ public class Stroke {
         return result;
     }
 
-    private List<String> convertNumbers(List<String> keys) {
+    private List<String> convertNumbers(Collection<String> keys) {
         // convert appropriate letters to numbers if the rtfcre contains '#'
-        if ((keys==null) || (!keys.contains("#"))) return keys;
+        if ((keys==null) || (!keys.contains("#"))) return new LinkedList<String>(keys);
         List<String> result = new LinkedList<String>();
         boolean numeral = false;
         for (String key : keys) {
@@ -176,8 +186,13 @@ public class Stroke {
         return result;
     }
 
-    private String constructStroke(List<String> chord) {
-        if (chord==null) return "";
+    private String constructStroke(List<String> input) {
+        if (input==null) return "";
+        //sort according to steno order
+        List<String> chord = new LinkedList<String>();
+        for (String key : STENO_KEYS)  if (input.contains(key)) chord.add(key);
+        boolean number=false;
+        for (String key : NUMBER_KEYS.values()) if (input.contains(key)) { number=true; chord.add(key); }
         String result = "";
         String suffix = "";
         if (! Collections.disjoint(chord, IMPLICIT_HYPHENS)) {
@@ -186,11 +201,12 @@ public class Stroke {
             }
         } else {
             for (String key : chord) {
-                if (key.equals("#") || key.charAt(key.length()-1) == '-') {
+                if (number || key.charAt(key.length()-1) == '-') {
                     result += key.replace("-", "");
-                }
-                if (key.charAt(0) == '-') {
-                    suffix += key.replace("-", "");
+                } else {
+                    if (key.charAt(0) == '-') {
+                        suffix += key.replace("-", "");
+                    }
                 }
             }
             if (! suffix.isEmpty()) {

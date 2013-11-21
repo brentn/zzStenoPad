@@ -94,6 +94,17 @@ public class TranslatorTest extends AndroidTestCase implements DisplayDevice.Dis
         assertEquals(1, backspaces);
         assertEquals("", text);
         assertEquals("", preview);
+        //numbers
+        translator.translate(new Stroke("#T-PL"), this);
+        assertEquals("278 ", text);
+        //suffix folding
+        translator.translate(new Stroke("AEF"), this);
+        assertEquals("avenue ", text);
+        translator.translate(new Stroke("AEFD"), this);
+        assertEquals("avenueed ", text);
+        translator.translate(new Stroke("AEPG"), this);
+        assertEquals("appealing ", text);
+
         //TODO: more testing
     }
 }

@@ -2,6 +2,7 @@ package com.brentandjody.stenopad.Translation;
 
 import com.brentandjody.stenopad.Display.DisplayItem;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -11,6 +12,9 @@ import java.util.List;
  * to apply formatting to translated steno strokes
  */
 public class Formatter {
+
+    private static final HashSet<String> SPECIAL_SUFFIXES = new HashSet<String>()
+    {{add("{^ly}");add("{^s}");add("{^y}");add("{^en}");add("{^ing}");add("{^ist}");add("{^ed}");}};
 
     int backspaces;
 
@@ -25,8 +29,12 @@ public class Formatter {
         }
         StringBuilder sb = new StringBuilder();
         for (Translation t : play) {
-            sb.append(format(t, state));
+            String next_word = format(t, state);
             state=t.getFormatting();
+            if (state.isAttachedStart() && sb.length()>0) {
+                sb.deleteCharAt(sb.length()-1); //erase a space from end
+            }
+            sb.append(next_word);
         }
         return new DisplayItem(backspaces, sb.toString());
     }
@@ -48,19 +56,18 @@ public class Formatter {
                 if (atom.equals("{^}")) { formatting.attachEnd().attachStart(); atom=""; }
                 if (atom.equals("{#Return}")) { sb.append("\n"); formatting.attachEnd(); atom=""; bs+=1; }
                 if (atom.equals("{#BackSpace}")) {backspaces++; bs-=1; formatting.attachEnd(); atom=""; }
-                if (atom.length()>1 && atom.charAt(1) == '&') { formatting.setGlue(); atom.replace("&", ""); }
-                if (atom.length()>1 && atom.charAt(1) == '^') { formatting.attachStart(); atom.replace("{^", "{"); }
-                if (atom.length()>2 && atom.charAt(atom.length()-2) == '^') { formatting.attachEnd(); atom.replace("^}", "}"); }
-            } else {
-                atom = atom.replaceAll("[\\{\\}]", "");
-                bs+=atom.length();
-                sb.append(atom);
+                if (SPECIAL_SUFFIXES.contains(atom)) { appendSuffix(sb, atom); formatting.attachStart(); atom=""; }
+                if (atom.length()>1 && atom.charAt(1) == '&') { formatting.setGlue(); atom = atom.replace("&", ""); }
+                if (atom.length()>1 && atom.charAt(1) == '^') { appendSuffix(sb, atom); formatting.attachStart(); atom = ""; }
+                if (atom.length()>2 && atom.charAt(atom.length()-2) == '^') { formatting.attachEnd(); atom = atom.replace("^}", "}"); }
             }
+            atom = atom.replaceAll("[\\{\\}]", "");
+            bs+=atom.length();
+            sb.append(atom);
         }
         formatting.addBackspaces(bs);
         translation.setFormatting(formatting);
-        String result = applyFormatting(priorState, formatting, sb.toString());
-        return result;
+        return applyFormatting(priorState, formatting, sb.toString());
     }
 
     private String applyFormatting(State priorFormat, State format, String s) {
@@ -109,5 +116,49 @@ public class Formatter {
             result.add(s);
         }
         return result;
+    }
+
+    private void appendSuffix(StringBuilder sb, String suffix) {
+        String s = sb.toString();
+        if (suffix.equals("{^ly}")) {
+            s = s.replaceAll("(.*[aeiou]c)", "$1ally");
+            sbSet(sb, s);
+        }
+        if (suffix.equals("{^s}")) {
+            s = s.replaceAll("(.*(?:s|sh|x|z|zh))", "$1es");
+            s = s.replaceAll("(.*(?:oa|ea|i|ee|oo|au|ou|l|n|(?<![gin]a)r|t)ch)", "$1es");
+            s = s.replaceAll("(.+[bcdfghjklmnpqrstvwxz])y", "$1ies");
+            sbSet(sb, s);
+        }
+        if (suffix.equals("{^ing}")) {
+            s = s.replaceAll("(.+)ie", "$1ing");
+            sbSet(sb, s);
+        }
+        if (suffix.equals("{^ist}")) {
+            s = s.replaceAll("(.+[cdfghlmnpr])y", "$1ist");
+            sbSet(sb, s);
+        }
+        if (suffix.equals("{^en}")) {
+            s = s.replaceAll("(.+)([t])e", "$1$2$2en");
+            sbSet(sb, s);
+        }
+        if (suffix.matches("\\^([a-hj-xz].*)")) {
+            s = s.replaceAll("(.+[bcdfghjklmnpqrstvwxz])y", "$1i");
+            sbSet(sb, s);
+            sb.append(suffix.replace("{^","").replace("}",""));
+        }
+        if (suffix.matches("\\^[aeiouy]*.")) {
+            s = s.replaceAll("(.+[bcdfghjklmnpqrstuvwxz])e", "$1");
+            s = s.replaceAll("(.*(?:[bcdfghjklmnprstvwxyz]|qu)[aeiou])([bcdfgklmnprtvz])", "$1$2$2");
+            sbSet(sb, s);
+        }
+        sb.append(suffix.replace("{^","").replace("}",""));
+    }
+
+    private void sbSet(StringBuilder sb, String s) {
+        if (sb.length()==0)
+            sb.append(s);
+        else
+            sb.replace(0,sb.length()-1,s);
     }
 }

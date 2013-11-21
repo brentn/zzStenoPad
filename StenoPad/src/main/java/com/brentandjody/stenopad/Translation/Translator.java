@@ -6,6 +6,7 @@ import com.brentandjody.stenopad.Display.DisplayDevice;
 
 import java.util.ArrayDeque;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -124,7 +125,26 @@ public class Translator {
     }
 
     private boolean worksWithSuffix(String stroke) {
-     //TODO:    //TODO: if it has suffix, and is not found as is, find word without suffix and add it.
+        Stroke lastStroke;
+        boolean hasSlash=false;
+        if (stroke.contains("/")) {
+            hasSlash=true;
+            lastStroke = new Stroke(stroke.substring(stroke.lastIndexOf("/")+1));
+        }
+        else lastStroke = new Stroke(stroke);
+        if( (lastStroke.toString().length() < 2) || (SUFFIX_KEYS.contains(lastStroke.rtfcre()))) return false;
+        if (!Collections.disjoint(lastStroke.keys(), SUFFIX_KEYS)) {
+            for (String key : SUFFIX_KEYS) {
+                if (lastStroke.keys().contains(key)) {
+                    String prefix="";
+                    if (hasSlash) prefix=stroke.substring(0,stroke.lastIndexOf("/")+1);
+                    lastStroke.removeKey(key);
+                    translate(new Stroke(prefix+lastStroke.rtfcre()));
+                    translate(new Stroke(key));
+                    return true;
+                }
+            }
+        }
         return false;
     }
 
