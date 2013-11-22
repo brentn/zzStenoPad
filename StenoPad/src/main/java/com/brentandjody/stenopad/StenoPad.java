@@ -1,9 +1,7 @@
 package com.brentandjody.stenopad;
 
 import com.brentandjody.stenopad.Display.DisplayDevice;
-import com.brentandjody.stenopad.Input.InputProtocol;
-import com.brentandjody.stenopad.Input.UsbInputDevice;
-import com.brentandjody.stenopad.Input.UsbLaunchActivity;
+import com.brentandjody.stenopad.Input.StenoMachineConnectionService;
 import com.brentandjody.stenopad.Translation.Translator;
 import com.brentandjody.stenopad.util.SystemUiHider;
 
@@ -11,7 +9,6 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbInterface;
-import android.hardware.usb.UsbManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -20,7 +17,7 @@ import android.view.View;
 import android.widget.TextView;
 
 
-public class StenoPad extends Activity implements UsbLaunchActivity.OnUsbDeviceAttachedListener{
+public class StenoPad extends Activity implements StenoMachineConnectionService.OnUsbDeviceAttachedListener{
 
     private static final boolean AUTO_HIDE = true;
     private static final int AUTO_HIDE_DELAY_MILLIS = 3000;
