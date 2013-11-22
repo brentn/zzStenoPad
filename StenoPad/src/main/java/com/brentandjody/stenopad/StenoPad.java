@@ -2,12 +2,16 @@ package com.brentandjody.stenopad;
 
 import com.brentandjody.stenopad.Display.DisplayDevice;
 import com.brentandjody.stenopad.Input.InputProtocol;
-import com.brentandjody.stenopad.Input.USBInputDevice;
+import com.brentandjody.stenopad.Input.UsbInputDevice;
+import com.brentandjody.stenopad.Input.UsbLaunchActivity;
 import com.brentandjody.stenopad.Translation.Translator;
 import com.brentandjody.stenopad.util.SystemUiHider;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.hardware.usb.UsbDeviceConnection;
+import android.hardware.usb.UsbInterface;
+import android.hardware.usb.UsbManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -16,7 +20,7 @@ import android.view.View;
 import android.widget.TextView;
 
 
-public class StenoPad extends Activity {
+public class StenoPad extends Activity implements UsbLaunchActivity.OnUsbDeviceAttachedListener{
 
     private static final boolean AUTO_HIDE = true;
     private static final int AUTO_HIDE_DELAY_MILLIS = 3000;
@@ -37,15 +41,14 @@ public class StenoPad extends Activity {
      */
     private SystemUiHider mSystemUiHider;
 
-    Translator translator;
-    InputProtocol keyboard;
-    DisplayDevice display;
+    private Translator translator;
+    private  UsbInputDevice keyboard;
+    private DisplayDevice display;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         translator = new Translator(this);
-        keyboard = new USBInputDevice();
 
         //TODO:keyboard.onStrokeListener = new OnStrokeListener() {
         //      onStroke(Stroke s)
@@ -161,5 +164,10 @@ public class StenoPad extends Activity {
     private void delayedHide(int delayMillis) {
         mHideHandler.removeCallbacks(mHideRunnable);
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
+    }
+
+    @Override
+    public void onUsbDeviceAttached(UsbDeviceConnection conn, UsbInterface iface) {
+        keyboard = new UsbInputDevice(conn, iface);
     }
 }

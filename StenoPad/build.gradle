@@ -22,4 +22,6 @@ android {
     }
 }
 
-dependencies {}
+dependencies {
+    compile files('libs/usb-serial-for-android-v010.jar')
+}
