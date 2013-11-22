@@ -2,6 +2,7 @@ package com.brentandjody.stenopad.Input;
 
 /**
  * Created by brentn on 22/11/13.
+ * Accept input from an N-Key Rollover (or any) keyboard such as MS Sidewinder
  */
 public class NKeyRolloverMachine extends StenoMachine {
 

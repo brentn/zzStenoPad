@@ -22,11 +22,6 @@ public class DisplayDevice {
         preview.setTextSize(text_size);
     }
 
-    public interface Display {
-        public void update(DisplayItem displayItem, String preview);
-    }
-
-
     public void update(DisplayItem item, String preview_text) {
         //append main_text to main, replace preview with preview_text
         main.append(item.getText());
