@@ -1,13 +1,9 @@
 package com.brentandjody.stenopad.Input;
 
-import com.brentandjody.stenopad.Input.SoftKeyboard.TouchLayer;
-
-import java.util.Set;
-
 /**
  * Created by brentn on 22/11/13.
  */
-public class TXBoltMachine extends StenoMachine {
+public class NKeyRolloverMachine extends StenoMachine {
 
     private OnStrokeListener onStrokeListener;
     private OnStateChangeListener onStateChangeListener;
@@ -27,5 +23,4 @@ public class TXBoltMachine extends StenoMachine {
     public String getState() {
         return current_state.name();
     }
-
 }

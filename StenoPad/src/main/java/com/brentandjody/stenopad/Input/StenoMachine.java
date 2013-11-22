@@ -9,23 +9,16 @@ import java.util.Set;
 public abstract class StenoMachine {
 
     public static enum STATE {DISCONNECTED, INITIALIZING, CONNECTED, ERROR};
-
-    private OnStrokeListener onStrokeListener;
-    private OnStateChangeListener onStateChangeListener;
+    public static enum TYPE {VIRTUAL, KEYBOARD, TXBOLT };
 
     public interface OnStrokeListener {
         public void onStroke(Set<String> keys);
     }
-    public void setOnStrokeListener(OnStrokeListener listener) {
-        onStrokeListener = listener;
-    }
-
     public interface OnStateChangeListener {
         public void onStateChange(String state);
     }
-    public void setOnStateChangeListener(OnStateChangeListener listener) {
-        onStateChangeListener = listener;
-    }
 
+    public abstract void setOnStrokeListener(OnStrokeListener listener);
+    public abstract void setOnStateChangeListener(OnStateChangeListener listener);
     public abstract String getState();
 }

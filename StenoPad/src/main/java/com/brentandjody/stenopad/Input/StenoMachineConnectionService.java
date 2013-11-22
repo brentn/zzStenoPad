@@ -27,7 +27,7 @@ public class StenoMachineConnectionService extends IntentService{
     }
 
     public interface OnUsbDeviceAttachedListener {
-        public void onUsbDeviceAttached(UsbDeviceConnection connection, UsbInterface iface);
+        public void onUsbDeviceAttached(StenoMachine machine);
     }
 
     public void setOnUsbDeviceAttached(OnUsbDeviceAttachedListener listener) {
@@ -46,6 +46,12 @@ public class StenoMachineConnectionService extends IntentService{
         UsbManager manager = (UsbManager) getSystemService(this.USB_SERVICE);
         UsbDeviceConnection connection = manager.openDevice(usbdevice);
         UsbInterface iface = usbdevice.getInterface(0);
-        onUsbDeviceAttachedListener.onUsbDeviceAttached(connection, iface);
+        StenoMachine machine = getStenoMachineByType(iface);
+        onUsbDeviceAttachedListener.onUsbDeviceAttached(machine);
+    }
+
+    private StenoMachine getStenoMachineByType(UsbInterface iface) {
+        //TODO: logic to determine which machine to create
+        return new TXBoltMachine();
     }
 }
