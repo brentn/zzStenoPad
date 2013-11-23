@@ -4,21 +4,15 @@
     android:orientation="vertical" android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:clickable="true"
-    android:baselineAligned="false">
-
-    <FrameLayout
-        android:layout_width="fill_parent"
-        android:layout_height="0dp"
-        android:layout_weight="6"
-        android:alpha="0"
-        android:background="@android:color/transparent"
-        android:id="@+id/input_area"></FrameLayout>
+    android:baselineAligned="false"
+    android:gravity="bottom"
+    android:id="@+id/touch_layer">
 
     <RelativeLayout
-        android:layout_height="100dp"
+        android:layout_height="180dp"
         android:layout_width="fill_parent"
-        android:layout_weight="1"
-        android:clickable="false">
+        android:clickable="false"
+        android:longClickable="false">
 
         <LinearLayout
             android:orientation="vertical"

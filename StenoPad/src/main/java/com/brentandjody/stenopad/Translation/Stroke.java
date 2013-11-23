@@ -19,6 +19,8 @@ import java.util.Set;
  */
 public class Stroke {
 
+    public static final String SEND_STROKE = "send stroke";
+
     private static final Set<String> IMPLICIT_HYPHENS = new HashSet<String>() {{
         add("A-"); add("O-"); add("5-"); add("0-"); add("-E"); add("-U"); add("*");
     }};

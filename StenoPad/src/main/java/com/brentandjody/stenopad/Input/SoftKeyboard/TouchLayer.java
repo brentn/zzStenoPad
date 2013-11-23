@@ -1,6 +1,7 @@
 package com.brentandjody.stenopad.Input.SoftKeyboard;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -33,7 +34,7 @@ public class TouchLayer extends LinearLayout {
 
     private List<TextView> keys = new ArrayList<TextView>();
     private boolean loading;
-    private Path[] path;
+    private Path[] path = new Path[NUMBER_OF_FINGERS];
 
     public TouchLayer(Context context) {
         super(context);
@@ -50,13 +51,13 @@ public class TouchLayer extends LinearLayout {
         initialize();
     }
 
-    private OnStrokeCompleteListener onStrokeCompleteListener;
-    public interface OnStrokeCompleteListener {
-        public void onStrokeComplete();
-    }
-    public void setOnStrokeCompleteListener(OnStrokeCompleteListener listener) {
-        onStrokeCompleteListener = listener;
-    }
+//    private OnStrokeCompleteListener onStrokeCompleteListener;
+//    public interface OnStrokeCompleteListener {
+//        public void onStrokeComplete();
+//    }
+//    public void setOnStrokeCompleteListener(OnStrokeCompleteListener listener) {
+//        onStrokeCompleteListener = listener;
+//    }
 
     @Override
     protected void onFinishInflate() {
@@ -101,7 +102,12 @@ public class TouchLayer extends LinearLayout {
             case MotionEvent.ACTION_UP: {
                 i = event.getActionIndex();
                 if (i == 0) { //TODO: only complete if keys are selected
-                    onStrokeCompleteListener.onStrokeComplete();
+                    if (anyKeysSelected()) {
+//                        onStrokeCompleteListener.onStrokeComplete();
+                        Intent intent = new Intent(Stroke.SEND_STROKE);
+                        intent.putExtra("stroke", getStroke().toString());
+                        getContext().sendBroadcast(intent);
+                    }
                 }
                 path[i].reset();
                 break;
@@ -132,6 +138,13 @@ public class TouchLayer extends LinearLayout {
             }
         }
         return new Stroke(new LinkedHashSet<String>(selected_keys));
+    }
+
+    public boolean anyKeysSelected() {
+        for (TextView key : keys) {
+            if (key.isSelected()) return true;
+        }
+        return false;
     }
 
     private void initialize() {
