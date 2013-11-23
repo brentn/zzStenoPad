@@ -25,9 +25,9 @@ public class Translator {
         add("-S"); add("-G"); add("-Z"); add("-D"); }};
 
     private final Dictionary dictionary;
-    private Deque<Stroke> strokeQ;
+    private Deque<Stroke> strokeQ = new ArrayDeque<Stroke>();
     private Formatter formatter = new Formatter();
-    private LimitedSizeDeque<Translation> history;
+    private LimitedSizeDeque<Translation> history = new LimitedSizeDeque<Translation>(HISTORY_SIZE);
     List<Translation> play = new LinkedList<Translation>();
     List<Translation> undo = new LinkedList<Translation>();
 
@@ -38,8 +38,6 @@ public class Translator {
 
     public Translator(Dictionary d) {
         dictionary = d;
-        strokeQ = new ArrayDeque<Stroke>();
-        history = new LimitedSizeDeque<Translation>(HISTORY_SIZE);
     }
 
     public void translate(Stroke stroke, DisplayDevice.Display display) {

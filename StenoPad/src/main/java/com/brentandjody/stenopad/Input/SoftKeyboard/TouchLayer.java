@@ -1,7 +1,6 @@
 package com.brentandjody.stenopad.Input.SoftKeyboard;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -51,13 +50,13 @@ public class TouchLayer extends LinearLayout {
         initialize();
     }
 
-//    private OnStrokeCompleteListener onStrokeCompleteListener;
-//    public interface OnStrokeCompleteListener {
-//        public void onStrokeComplete();
-//    }
-//    public void setOnStrokeCompleteListener(OnStrokeCompleteListener listener) {
-//        onStrokeCompleteListener = listener;
-//    }
+    private OnStrokeCompleteListener onStrokeCompleteListener;
+    public interface OnStrokeCompleteListener {
+        public void onStrokeComplete(Stroke stroke);
+    }
+    public void setOnStrokeCompleteListener(OnStrokeCompleteListener listener) {
+        onStrokeCompleteListener = listener;
+    }
 
     @Override
     protected void onFinishInflate() {
@@ -103,10 +102,7 @@ public class TouchLayer extends LinearLayout {
                 i = event.getActionIndex();
                 if (i == 0) { //TODO: only complete if keys are selected
                     if (anyKeysSelected()) {
-//                        onStrokeCompleteListener.onStrokeComplete();
-                        Intent intent = new Intent(Stroke.SEND_STROKE);
-                        intent.putExtra("stroke", getStroke().toString());
-                        getContext().sendBroadcast(intent);
+                        onStrokeCompleteListener.onStrokeComplete(getStroke());
                     }
                 }
                 path[i].reset();
@@ -118,13 +114,15 @@ public class TouchLayer extends LinearLayout {
 
     public void setLoading() {
         loading=true;
+        invalidate();
     }
 
     public void clearLoading() {
         loading=false;
+        invalidate();
     }
 
-    public Stroke getStroke() {
+    private Stroke getStroke() {
         // Reads stroke from keyboard, and resets the keys
         List<String> selected_keys = new LinkedList<String>();
         String name;
@@ -149,6 +147,7 @@ public class TouchLayer extends LinearLayout {
 
     private void initialize() {
         loading=true;
+        setWillNotDraw(false);
         for (int x=0; x<NUMBER_OF_FINGERS; x++) {
             path[x] = new Path();
         }
