@@ -8,6 +8,7 @@ import java.util.Set;
  */
 public abstract class StenoMachine {
 
+    public static String CONNECTED_INTENT="3003";
     public static enum STATE {DISCONNECTED, INITIALIZING, CONNECTED, ERROR};
     public static enum TYPE {VIRTUAL, KEYBOARD, TXBOLT };
 

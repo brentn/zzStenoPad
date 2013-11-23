@@ -33,11 +33,11 @@ public class StenoMachineConnectionService extends IntentService{
         UsbManager manager = (UsbManager) getSystemService(this.USB_SERVICE);
         UsbDeviceConnection connection = manager.openDevice(usbdevice);
         UsbInterface iface = usbdevice.getInterface(0);
-        StenoMachine machine = getStenoMachineByType(iface);
-        ConnectionNotifier.getInstance().registerConnectedDevice(machine);
+        StenoMachine machine = getStenoMachineByType(manager, usbdevice);
+        sendBroadcast(new Intent(StenoMachine.CONNECTED_INTENT));
     }
 
-    private StenoMachine getStenoMachineByType(UsbInterface iface) {
+    private StenoMachine getStenoMachineByType(UsbManager manage, UsbDevice device) {
         //TODO: logic to determine which machine to create
         return new TXBoltMachine();
     }

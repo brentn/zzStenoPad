@@ -42,7 +42,7 @@ public class Translator {
         history = new LimitedSizeDeque<Translation>(HISTORY_SIZE);
     }
 
-    public void translate(Stroke stroke, DisplayDevice display) {
+    public void translate(Stroke stroke, DisplayDevice.Display display) {
         State state = translate(stroke);
         if (display != null) {
             display.update(formatter.format(undo, play, state), wordsInQueue());
