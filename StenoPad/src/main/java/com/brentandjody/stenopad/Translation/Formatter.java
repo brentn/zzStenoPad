@@ -21,14 +21,14 @@ public class Formatter {
     public Formatter() {
     }
 
-    public DisplayItem format(Iterable<Translation> undo, Iterable<Translation> play, State state) {
+    public DisplayItem format(Iterable<Definition> undo, Iterable<Definition> play, State state) {
         //Process play - and produce a DisplayItem
         backspaces = 0;
-        for (Translation t : undo) {
+        for (Definition t : undo) {
             backspaces+=t.getFormatting().getBackspaces();
         }
         StringBuilder sb = new StringBuilder();
-        for (Translation t : play) {
+        for (Definition t : play) {
             String next_word = format(t, state);
             state=t.getFormatting();
             if (state.isAttachedStart() && sb.length()>0) {
@@ -39,17 +39,17 @@ public class Formatter {
         return new DisplayItem(backspaces, sb.toString());
     }
 
-    private String format(Translation translation, State priorState) {
-        //decodes and updates formatting for translation
-        State formatting = translation.getFormatting();
-        if (translation.english() == null) {
-            formatting.addBackspaces(translation.rtfcre().length()+1);
-            translation.setFormatting(formatting);
-            return translation.rtfcre()+" ";
+    private String format(Definition definition, State priorState) {
+        //decodes and updates formatting for definition
+        State formatting = definition.getFormatting();
+        if (definition.english() == null) {
+            formatting.addBackspaces(definition.rtfcre().length()+1);
+            definition.setFormatting(formatting);
+            return definition.rtfcre()+" ";
         }
         StringBuilder sb = new StringBuilder();
         int bs = 0;
-        for (String atom : breakApart(translation.english())) {
+        for (String atom : breakApart(definition.english())) {
             if (atom.charAt(0) == '{') {
                 if (atom.equals("{|-}")) { formatting.setCapitalize().attachEnd(); atom=""; }
                 if (atom.equals("{>}")) { formatting.setLowercase().attachEnd(); atom=""; }
@@ -66,7 +66,7 @@ public class Formatter {
             sb.append(atom);
         }
         formatting.addBackspaces(bs);
-        translation.setFormatting(formatting);
+        definition.setFormatting(formatting);
         return applyFormatting(priorState, formatting, sb.toString());
     }
 

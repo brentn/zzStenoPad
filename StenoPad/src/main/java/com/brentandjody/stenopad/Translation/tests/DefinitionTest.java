@@ -3,13 +3,13 @@ package com.brentandjody.stenopad.Translation.tests;
 import android.test.AndroidTestCase;  //because this requires getContext()
 
 import com.brentandjody.stenopad.Translation.Stroke;
-import com.brentandjody.stenopad.Translation.Translation;
+import com.brentandjody.stenopad.Translation.Definition;
 
 import java.util.Arrays;
 import java.util.HashSet;
 
 
-public class TranslationTest extends AndroidTestCase {
+public class DefinitionTest extends AndroidTestCase {
 
     private static final Stroke S = new Stroke(new HashSet<String>() {{add("S-");}});
     private static final Stroke T = new Stroke(new HashSet<String>() {{add("T-");}});
@@ -22,14 +22,14 @@ public class TranslationTest extends AndroidTestCase {
     }
 
     public void testNoTranslation() throws Exception {
-        Translation t = new Translation(strokeResult, null);
+        Definition t = new Definition(strokeResult, null);
         assertTrue(Arrays.equals(strokeResult, t.strokes()));
         assertEquals("S/T", t.rtfcre());
         assertNull(t.english());
     }
 
     public void testTranslation() throws Exception {
-        Translation t = new Translation(strokeResult, "translation");
+        Definition t = new Definition(strokeResult, "translation");
         assertTrue(Arrays.equals(strokeResult, t.strokes()));
         assertEquals("S/T", t.rtfcre());
         assertEquals("translation", t.english());

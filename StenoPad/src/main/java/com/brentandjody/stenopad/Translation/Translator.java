@@ -28,9 +28,9 @@ public class Translator {
     private final Dictionary dictionary;
     private Deque<Stroke> strokeQ = new ArrayDeque<Stroke>();
     private Formatter formatter = new Formatter();
-    private LimitedSizeDeque<Translation> history = new LimitedSizeDeque<Translation>(HISTORY_SIZE);
-    List<Translation> play = new LinkedList<Translation>();
-    List<Translation> undo = new LinkedList<Translation>();
+    private LimitedSizeDeque<Definition> history = new LimitedSizeDeque<Definition>(HISTORY_SIZE);
+    List<Definition> play = new LinkedList<Definition>();
+    List<Definition> undo = new LinkedList<Definition>();
 
     public Translator(Context context) {
         dictionary = new Dictionary(context);
@@ -52,7 +52,7 @@ public class Translator {
 
     private State translate(Stroke s) {
         State state = null;
-        Translation translation;
+        Definition translation;
         if (s.isCorrection()) {
             processUndo();
             state = getStateFromHistory();
@@ -68,7 +68,7 @@ public class Translator {
                 if (ambiguous(definition)) {
                     strokeQ.add(s);
                 } else { //not ambiguous
-                    translation = new Translation(full_stroke, definition);
+                    translation = new Definition(full_stroke, definition);
                     play.add(translation);
                     state = getStateFromHistory();
                     history.add(translation);
@@ -77,7 +77,7 @@ public class Translator {
             } else { //full_stroke not found
                 if (!worksWithSuffix(full_stroke)) {
                     if (strokeQ.isEmpty()) { //queue is empty, and last stroke not found
-                        translation = new Translation(s.asArray(), s.rtfcre()); // add RTF/CRE as text
+                        translation = new Definition(s.asArray(), s.rtfcre()); // add RTF/CRE as text
                         play.add(translation);
                         state = getStateFromHistory();
                         history.add(translation);
@@ -89,9 +89,9 @@ public class Translator {
                             full_stroke = Stroke.combine(strokesInQueue());
                             definition = dictionary.forceLookup(full_stroke);
                             if (definition != null) {
-                                translation = new Translation(full_stroke, definition);
+                                translation = new Definition(full_stroke, definition);
                             } else { // can't find in dictionary
-                                translation = new Translation(full_stroke, full_stroke);
+                                translation = new Definition(full_stroke, full_stroke);
                             }
                             play.add(translation);
                             state = getStateFromHistory();
@@ -110,10 +110,10 @@ public class Translator {
     private void processUndo() {
         if (strokeQ.isEmpty()) {
             if (!history.isEmpty()) {
-                // put the strokes from last translation on the queue, and remove the final stroke
-                Translation translation = history.removeLast();
-                undo.add(translation);
-                strokeQ.addAll(Arrays.asList(translation.strokes()));
+                // put the strokes from last definition on the queue, and remove the final stroke
+                Definition definition = history.removeLast();
+                undo.add(definition);
+                strokeQ.addAll(Arrays.asList(definition.strokes()));
                 strokeQ.removeLast();
             }
         } else { //there are strokes in the queue
@@ -169,7 +169,7 @@ public class Translator {
 
     private void replayHistoryItem() {
         if (history.isEmpty()) return;
-        Translation t = history.removeLast();
+        Definition t = history.removeLast();
         undo.add(t);
         for (Stroke s : t.strokes()) {
             translate(s, null);

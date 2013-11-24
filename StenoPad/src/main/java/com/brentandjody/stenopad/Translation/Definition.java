@@ -6,7 +6,7 @@ package com.brentandjody.stenopad.Translation;
  * This is the main translation class
  * and represents a group of strokes, and the translation they represents
  */
-public class Translation {
+public class Definition {
 
     private final Stroke[] strokes;
     private final String english;
@@ -14,16 +14,16 @@ public class Translation {
 
     @Override
     public String toString() {
-        return "Translation(" + rtfcre() + " : " + english + ")";
+        return "Definition(" + rtfcre() + " : " + english + ")";
     }
 
-    public Translation(String outlineString, String translation) {
+    public Definition(String outlineString, String translation) {
         strokes = Stroke.separate(outlineString);
         english = translation;
         formatting = new State();
     }
 
-    public Translation(Stroke[] outline, String translation) {
+    public Definition(Stroke[] outline, String translation) {
         // outline: a series of stroke objects
         // translation: a translation for the outline, or null
         strokes = outline;
