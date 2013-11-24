@@ -22,6 +22,15 @@ public class Screen extends DisplayDevice implements DisplayDevice.Display {
 
     public void update(DisplayItem item, String preview_text) {
         //append main_text to main, replace preview with preview_text
+        if (main.length() > 0 && item.getBackspaces() > 0) {
+            String current_text = "";
+            int new_length=0;
+            if (main.getText() != null) {
+                current_text = main.getText().toString();
+                new_length = current_text.length();
+            }
+            main.setText(current_text.substring(0, new_length-1));
+        }
         main.append(item.getText());
         preview.setText(preview_text);
         Point preview_pos = getPreviewPosition();
@@ -32,11 +41,14 @@ public class Screen extends DisplayDevice implements DisplayDevice.Display {
 
     private Point getPreviewPosition() {
         //position preview at the end of main
+        if (main == null) return new Point(0,0);
         final int main_width = main.getWidth();
         final int preview_width = preview.getWidth()-preview.getPaddingLeft();
-        final int text_length = main.getText().length();
         int y = main.getLineBounds(main.getLineCount()-1, null); // baseline of last line
         if (line_height==0) line_height = y; // set this the first time through
+        final CharSequence current_text = main.getText();
+        if (current_text==null) return new Point(0, y);
+        final int text_length = current_text.length();
         int x = 0;
         // look for the position of the last character
         int charnum = main.getOffsetForPosition(x, y);

@@ -35,6 +35,7 @@ public class TranslatorTest extends AndroidTestCase implements DisplayDevice.Dis
             loaded = true;
         }
         translator = new Translator(dictionary);
+        translator.USE_SUFFIX_FOLDING=true;
     }
 
     public void update(DisplayItem item, String preview) {

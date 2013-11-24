@@ -21,6 +21,7 @@ import java.util.concurrent.LinkedBlockingDeque;
 public class Translator {
 
     private static final int HISTORY_SIZE = 50;
+    public static boolean USE_SUFFIX_FOLDING = false;
     private static final Set<String> SUFFIX_KEYS = new HashSet<String>() {{
         add("-S"); add("-G"); add("-Z"); add("-D"); }};
 
@@ -123,13 +124,15 @@ public class Translator {
     }
 
     private boolean worksWithSuffix(String stroke) {
+        if (! USE_SUFFIX_FOLDING) return false;
         Stroke lastStroke;
         boolean hasSlash=false;
         if (stroke.contains("/")) {
             hasSlash=true;
             lastStroke = new Stroke(stroke.substring(stroke.lastIndexOf("/")+1));
+        }  else {
+            lastStroke = new Stroke(stroke);
         }
-        else lastStroke = new Stroke(stroke);
         if( (lastStroke.toString().length() < 2) || (SUFFIX_KEYS.contains(lastStroke.rtfcre()))) return false;
         if (!Collections.disjoint(lastStroke.keys(), SUFFIX_KEYS)) {
             for (String key : SUFFIX_KEYS) {
