@@ -84,8 +84,9 @@ public class TouchLayer extends LinearLayout {
         float x, y;
         int i;
         switch (event.getActionMasked()) {
-            case MotionEvent.ACTION_DOWN: {
-                i = event.getActionIndex();
+            case MotionEvent.ACTION_DOWN:case MotionEvent.ACTION_POINTER_DOWN: {
+                i = event.getPointerId(event.getActionIndex());
+                if (i > NUMBER_OF_FINGERS) break;
                 x = event.getX(i);
                 y = event.getY(i);
                 path[i].reset();
@@ -98,8 +99,9 @@ public class TouchLayer extends LinearLayout {
                 invalidate();
                 break;
             }
-            case MotionEvent.ACTION_UP: {
-                i = event.getActionIndex();
+            case MotionEvent.ACTION_UP:case MotionEvent.ACTION_POINTER_UP: {
+                i = event.getPointerId(event.getActionIndex());
+                if (i > NUMBER_OF_FINGERS) break;
                 if (i == 0) { //TODO: only complete if keys are selected
                     if (anyKeysSelected()) {
                         onStrokeCompleteListener.onStrokeComplete(getStroke());

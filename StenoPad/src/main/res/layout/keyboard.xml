@@ -9,10 +9,11 @@
     android:id="@+id/touch_layer">
 
     <RelativeLayout
-        android:layout_height="220dp"
+        android:layout_height="180dp"
         android:layout_width="fill_parent"
         android:clickable="false"
-        android:longClickable="false">
+        android:longClickable="false"
+        android:focusable="false">
 
         <LinearLayout
             android:orientation="vertical"
@@ -61,7 +62,10 @@
                     android:layout_marginLeft="2dp"
                     android:layout_marginTop="-5dp"
                     android:hint="S-"
-                    android:textColor="@android:color/black" />
+                    android:textColor="@android:color/black"
+                    android:clickable="false"
+                    android:focusable="false"
+                    android:longClickable="false" />
 
                 <TextView
                     android:layout_width="0dp"
@@ -75,7 +79,9 @@
                     android:layout_marginRight="2dp"
                     android:layout_marginTop="-5dp"
                     android:hint="T-"
-                    android:textColor="@android:color/black"/>
+                    android:textColor="@android:color/black"
+                    android:clickable="false"
+                    android:longClickable="false" />
 
                 <TextView
                     android:layout_width="0dp"
@@ -89,7 +95,9 @@
                     android:layout_marginLeft="2dp"
                     android:layout_marginTop="-5dp"
                     android:hint="P-"
-                    android:textColor="@android:color/black"/>
+                    android:textColor="@android:color/black"
+                    android:clickable="false"
+                    android:longClickable="false" />
 
                 <TextView
                     android:layout_width="0dp"
@@ -104,7 +112,9 @@
                     android:layout_marginRight="2dp"
                     android:layout_marginTop="-5dp"
                     android:hint="H-"
-                    android:textColor="@android:color/black"/>
+                    android:textColor="@android:color/black"
+                    android:clickable="false"
+                    android:longClickable="false" />
 
                 <LinearLayout
                     android:orientation="vertical"
@@ -131,7 +141,9 @@
                             android:layout_marginLeft="2dp"
                             android:layout_marginTop="-5dp"
                             android:hint="#"
-                            android:textColor="@android:color/black"/>
+                            android:textColor="@android:color/black"
+                            android:clickable="false"
+                            android:longClickable="false" />
 
                         <FrameLayout
                             android:layout_width="0dp"
@@ -159,7 +171,9 @@
                             android:layout_marginLeft="2dp"
                             android:layout_marginTop="-5dp"
                             android:hint="*"
-                            android:textColor="@android:color/black"/>
+                            android:textColor="@android:color/black"
+                            android:clickable="false"
+                            android:longClickable="false" />
 
                     </LinearLayout>
 
@@ -182,7 +196,9 @@
                     android:layout_marginLeft="2dp"
                     android:layout_marginTop="-5dp"
                     android:hint="-F"
-                    android:textColor="@android:color/black"/>
+                    android:textColor="@android:color/black"
+                    android:clickable="false"
+                    android:longClickable="false" />
 
                 <TextView
                     android:layout_width="0dp"
@@ -196,7 +212,9 @@
                     android:layout_marginRight="2dp"
                     android:layout_marginTop="-5dp"
                     android:hint="-P"
-                    android:textColor="@android:color/black"/>
+                    android:textColor="@android:color/black"
+                    android:clickable="false"
+                    android:longClickable="false" />
 
                 <TextView
                     android:layout_width="0dp"
@@ -210,7 +228,9 @@
                     android:layout_marginLeft="2dp"
                     android:layout_marginTop="-5dp"
                     android:hint="-L"
-                    android:textColor="@android:color/black"/>
+                    android:textColor="@android:color/black"
+                    android:clickable="false"
+                    android:longClickable="false" />
 
                 <TextView
                     android:layout_width="0dp"
@@ -225,7 +245,9 @@
                     android:layout_marginRight="2dp"
                     android:layout_marginTop="-5dp"
                     android:hint="-T"
-                    android:textColor="@android:color/black"/>
+                    android:textColor="@android:color/black"
+                    android:clickable="false"
+                    android:longClickable="false" />
 
                 <TextView
                     android:layout_width="0dp"
@@ -240,12 +262,14 @@
                     android:layout_marginRight="2dp"
                     android:layout_marginTop="-5dp"
                     android:hint="-D"
-                    android:textColor="@android:color/black"/>
+                    android:textColor="@android:color/black"
+                    android:clickable="false"
+                    android:longClickable="false" />
             </LinearLayout>
 
             <FrameLayout
                 android:layout_width="fill_parent"
-                android:layout_height="40dp"
+                android:layout_height="55dp"
                 android:id="@+id/gutter"
                 android:background="@android:color/darker_gray"></FrameLayout>
 
@@ -269,7 +293,9 @@
                     android:layout_marginRight="2dp"
                     android:layout_marginBottom="-5dp"
                     android:hint="S-"
-                    android:textColor="@android:color/black"/>
+                    android:textColor="@android:color/black"
+                    android:clickable="false"
+                    android:longClickable="false" />
 
                 <TextView
                     android:layout_width="0dp"
@@ -283,7 +309,9 @@
                     android:layout_marginRight="2dp"
                     android:layout_marginBottom="-5dp"
                     android:hint="K-"
-                    android:textColor="@android:color/black"/>
+                    android:textColor="@android:color/black"
+                    android:clickable="false"
+                    android:longClickable="false" />
 
                 <TextView
                     android:layout_width="0dp"
@@ -297,7 +325,9 @@
                     android:layout_marginRight="2dp"
                     android:layout_marginBottom="-5dp"
                     android:hint="W-"
-                    android:textColor="@android:color/black"/>
+                    android:textColor="@android:color/black"
+                    android:clickable="false"
+                    android:longClickable="false" />
 
                 <TextView
                     android:layout_width="0dp"
@@ -311,7 +341,9 @@
                     android:layout_marginRight="2dp"
                     android:layout_marginBottom="-5dp"
                     android:hint="R-"
-                    android:textColor="@android:color/black"/>
+                    android:textColor="@android:color/black"
+                    android:clickable="false"
+                    android:longClickable="false" />
 
                 <LinearLayout
                     android:orientation="vertical"
@@ -344,7 +376,9 @@
                             android:layout_marginRight="3dp"
                             android:layout_marginBottom="-5dp"
                             android:hint="A-"
-                            android:textColor="@android:color/black"/>
+                            android:textColor="@android:color/black"
+                            android:clickable="false"
+                            android:longClickable="false" />
 
                         <TextView
                             android:layout_width="0dp"
@@ -358,7 +392,9 @@
                             android:layout_marginRight="3dp"
                             android:layout_marginBottom="-5dp"
                             android:hint="O-"
-                            android:textColor="@android:color/black"/>
+                            android:textColor="@android:color/black"
+                            android:clickable="false"
+                            android:longClickable="false" />
 
                         <TextView
                             android:layout_width="0dp"
@@ -372,7 +408,9 @@
                             android:layout_marginRight="3dp"
                             android:layout_marginBottom="-5dp"
                             android:hint="-E"
-                            android:textColor="@android:color/black"/>
+                            android:textColor="@android:color/black"
+                            android:clickable="false"
+                            android:longClickable="false" />
 
                         <TextView
                             android:layout_width="0dp"
@@ -386,7 +424,9 @@
                             android:layout_marginRight="3dp"
                             android:layout_marginBottom="-5dp"
                             android:hint="-U"
-                            android:textColor="@android:color/black" />
+                            android:textColor="@android:color/black"
+                            android:clickable="false"
+                            android:longClickable="false" />
 
                     </LinearLayout>
                 </LinearLayout>
@@ -403,7 +443,9 @@
                     android:layout_marginLeft="2dp"
                     android:layout_marginBottom="-5dp"
                     android:hint="-R"
-                    android:textColor="@android:color/black"/>
+                    android:textColor="@android:color/black"
+                    android:clickable="false"
+                    android:longClickable="false" />
 
                 <TextView
                     android:layout_width="0dp"
@@ -417,7 +459,9 @@
                     android:layout_marginRight="2dp"
                     android:layout_marginBottom="-5dp"
                     android:hint="-B"
-                    android:textColor="@android:color/black"/>
+                    android:textColor="@android:color/black"
+                    android:clickable="false"
+                    android:longClickable="false" />
 
                 <TextView
                     android:layout_width="0dp"
@@ -431,7 +475,9 @@
                     android:layout_marginLeft="2dp"
                     android:layout_marginBottom="-5dp"
                     android:hint="-G"
-                    android:textColor="@android:color/black"/>
+                    android:textColor="@android:color/black"
+                    android:clickable="false"
+                    android:longClickable="false" />
 
                 <TextView
                     android:layout_width="0dp"
@@ -445,7 +491,9 @@
                     android:layout_marginRight="2dp"
                     android:layout_marginBottom="-5dp"
                     android:hint="-S"
-                    android:textColor="@android:color/black"/>
+                    android:textColor="@android:color/black"
+                    android:clickable="false"
+                    android:longClickable="false" />
 
                 <TextView
                     android:layout_width="0dp"
@@ -460,7 +508,9 @@
                     android:layout_marginRight="2dp"
                     android:layout_marginBottom="-5dp"
                     android:hint="-Z"
-                    android:textColor="@android:color/black"/>
+                    android:textColor="@android:color/black"
+                    android:clickable="false"
+                    android:longClickable="false" />
             </LinearLayout>
         </LinearLayout>
 
@@ -480,7 +530,6 @@
                 android:id="@+id/progressBar"
                 android:layout_gravity="center"
                 android:minWidth="250dp"
-                android:layout_marginTop="20dp"
                 android:clickable="false" />
 
             <TextView
