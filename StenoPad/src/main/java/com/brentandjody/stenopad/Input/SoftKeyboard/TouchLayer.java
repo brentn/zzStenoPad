@@ -1,13 +1,11 @@
 package com.brentandjody.stenopad.Input.SoftKeyboard;
 
-import android.app.Instrumentation;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Point;
-import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -61,6 +59,11 @@ public class TouchLayer extends LinearLayout {
     }
 
     @Override
+    protected void onLayout(boolean changed, int l, int t, int r, int b) {
+        super.onLayout(changed, l, t, r, b);
+    }
+
+    @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
         keys.clear();
@@ -86,7 +89,7 @@ public class TouchLayer extends LinearLayout {
         float x, y;
         int i;
         switch (event.getActionMasked()) {
-            case MotionEvent.ACTION_DOWN:case MotionEvent.ACTION_POINTER_DOWN: {
+            case MotionEvent.ACTION_DOWN: case MotionEvent.ACTION_POINTER_DOWN: {
                 i = event.getPointerId(event.getActionIndex());
                 if (i > NUMBER_OF_FINGERS) break;
                 x = event.getX(i);
@@ -98,10 +101,10 @@ public class TouchLayer extends LinearLayout {
             }
             case MotionEvent.ACTION_MOVE: {
                 selectKeys(event);
-                invalidate();
+                //invalidate();
                 break;
             }
-            case MotionEvent.ACTION_UP:case MotionEvent.ACTION_POINTER_UP: {
+            case MotionEvent.ACTION_UP: case MotionEvent.ACTION_POINTER_UP: {
                 i = event.getPointerId(event.getActionIndex());
                 if (i > NUMBER_OF_FINGERS) break;
                 if (i == 0) { //TODO: only complete if keys are selected
@@ -221,11 +224,11 @@ public class TouchLayer extends LinearLayout {
     }
 
     private Point getScreenOffset(View v) {
-        Point result = new Point();
+        Point offset = new Point();
         int[] location = new int[2];
         v.getLocationOnScreen(location);
-        result.set(location[0], location[1]);
-        return result;
+        offset.set(location[0], location[1]);
+        return offset;
     }
 
     private Boolean pointerOnKey(Point p, View key) {
@@ -247,37 +250,37 @@ public class TouchLayer extends LinearLayout {
         onStrokeCompleteListener.onStrokeComplete(getStroke());
     }
 
-    public void test_keys(Instrumentation inst, List<TextView> keys) {
-        boolean first = true;
-        float x=0;
-        float y=0;
-        long startTime = SystemClock.uptimeMillis();
-        for (TextView key : keys) {
-            x = key.getX();
-            y = key.getY();
-            if (first) {
-                simulate_place_finger(inst, startTime, x, y);
-                first = false;
-            } else {
-                simulate_move_finger(inst, startTime, x, y);
-            }
-        }
-        simulate_remove_finger(inst, startTime, x, y);
-        onStrokeCompleteListener.onStrokeComplete(getStroke());
-    }
-
-    private void simulate_place_finger(Instrumentation inst, long startTime, float x, float y) {
-        MotionEvent event = MotionEvent.obtain(startTime, SystemClock.uptimeMillis(), MotionEvent.ACTION_DOWN, x, y, 0 );
-        inst.sendPointerSync(event);
-    }
-
-    private void simulate_move_finger(Instrumentation inst, long startTime, float x, float y) {
-        MotionEvent event = MotionEvent.obtain(startTime, SystemClock.uptimeMillis(), MotionEvent.ACTION_MOVE, x, y, 0 );
-        inst.sendPointerSync(event);
-    }
-
-    private void simulate_remove_finger(Instrumentation inst, long startTime, float x, float y) {
-        MotionEvent event = MotionEvent.obtain(startTime, SystemClock.uptimeMillis(), MotionEvent.ACTION_UP, x, y, 0 );
-        inst.sendPointerSync(event);
-    }
+//    public void test_keys(Instrumentation inst, List<TextView> keys) {
+//        boolean first = true;
+//        float x=0;
+//        float y=0;
+//        long startTime = SystemClock.uptimeMillis();
+//        for (TextView key : keys) {
+//            x = key.getX();
+//            y = key.getY();
+//            if (first) {
+//                simulate_place_finger(inst, startTime, x, y);
+//                first = false;
+//            } else {
+//                simulate_move_finger(inst, startTime, x, y);
+//            }
+//        }
+//        simulate_remove_finger(inst, startTime, x, y);
+//        onStrokeCompleteListener.onStrokeComplete(getStroke());
+//    }
+//
+//    private void simulate_place_finger(Instrumentation inst, long startTime, float x, float y) {
+//        MotionEvent event = MotionEvent.obtain(startTime, SystemClock.uptimeMillis(), MotionEvent.ACTION_DOWN, x, y, 0 );
+//        inst.sendPointerSync(event);
+//    }
+//
+//    private void simulate_move_finger(Instrumentation inst, long startTime, float x, float y) {
+//        MotionEvent event = MotionEvent.obtain(startTime, SystemClock.uptimeMillis(), MotionEvent.ACTION_MOVE, x, y, 0 );
+//        inst.sendPointerSync(event);
+//    }
+//
+//    private void simulate_remove_finger(Instrumentation inst, long startTime, float x, float y) {
+//        MotionEvent event = MotionEvent.obtain(startTime, SystemClock.uptimeMillis(), MotionEvent.ACTION_UP, x, y, 0 );
+//        inst.sendPointerSync(event);
+//    }
 }

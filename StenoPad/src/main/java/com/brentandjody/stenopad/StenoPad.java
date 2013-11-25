@@ -40,9 +40,9 @@ public class StenoPad extends Activity implements StenoMachine.OnStrokeListener,
         final TextView preview = (TextView) findViewById(R.id.preview);
         displayDevice = new Screen(main_view, preview);
         // set up dictionary / translator
-        dictionary = new Dictionary(this);
+        dictionary = new Dictionary(getApplicationContext());
         dictionary.loadDefault();
-        translator = new Translator(StenoPad.this);
+        translator = new Translator(dictionary);
         // register listeners
         dictionary.setOnDictionaryLoadedListener(this);
         // add soft-keyboard until hardware keyboard is plugged in

@@ -61,6 +61,7 @@ public class Dictionary {
             throw new IllegalArgumentException(extension + " is not an accepted dictionary format.");
         }
         loading = true;
+
         new JsonLoader().execute(filename);
     }
 
@@ -115,12 +116,12 @@ public class Dictionary {
             int count = filenames.length;
             String line, stroke, translation;
             String[] fields;
-            for (int i = 0; i < count; i++) {
-                if (filenames[i] == null || filenames[i].isEmpty())
+            for (String filename : filenames) {
+                if (filename == null || filename.isEmpty())
                     throw new IllegalArgumentException("Dictionary filename not provided");
                 try {
                     AssetManager am = context.getAssets();
-                    InputStream filestream = am.open(filenames[i]);
+                    InputStream filestream = am.open(filename);
                     InputStreamReader reader = new InputStreamReader(filestream);
                     BufferedReader lines = new BufferedReader(reader);
                     while ((line = lines.readLine()) != null) {
@@ -138,7 +139,7 @@ public class Dictionary {
                     reader.close();
                     filestream.close();
                 } catch (IOException e) {
-                    System.err.println("Dictionary File: "+filenames[i]+" could not be found");
+                    System.err.println("Dictionary File: " + filename + " could not be found");
                 }
             }
             return (long) count;

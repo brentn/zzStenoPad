@@ -540,7 +540,6 @@
                 android:id="@+id/loading_text"
                 android:textAlignment="center"
                 android:layout_gravity="center"
-                android:layout_marginTop="4dp"
                 android:textColor="@android:color/white" />
         </FrameLayout>
 
