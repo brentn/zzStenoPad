@@ -1,11 +1,13 @@
 package com.brentandjody.stenopad.Input.SoftKeyboard;
 
+import android.app.Instrumentation;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Point;
+import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -231,5 +233,51 @@ public class TouchLayer extends LinearLayout {
         Point topLeft = getScreenOffset(key);
         bottomRight.set(topLeft.x+key.getWidth(), topLeft.y+key.getHeight());
         return !((p.x < topLeft.x) || (p.x > bottomRight.x) || (p.y < topLeft.y) || (p.y > bottomRight.y));
+    }
+
+    public void test_keys(String keystring) {
+        ArrayList<View> keyViews = new ArrayList<View>();
+        for (String key : keystring.split("/")) {
+            findViewsWithText(keyViews, key.replace("-",""), FIND_VIEWS_WITH_TEXT);
+            for (View keyView : keys) {
+                if (((TextView) keyView).getHint().toString().equals(key))
+                    keyView.setSelected(true);
+            }
+        }
+        onStrokeCompleteListener.onStrokeComplete(getStroke());
+    }
+
+    public void test_keys(Instrumentation inst, List<TextView> keys) {
+        boolean first = true;
+        float x=0;
+        float y=0;
+        long startTime = SystemClock.uptimeMillis();
+        for (TextView key : keys) {
+            x = key.getX();
+            y = key.getY();
+            if (first) {
+                simulate_place_finger(inst, startTime, x, y);
+                first = false;
+            } else {
+                simulate_move_finger(inst, startTime, x, y);
+            }
+        }
+        simulate_remove_finger(inst, startTime, x, y);
+        onStrokeCompleteListener.onStrokeComplete(getStroke());
+    }
+
+    private void simulate_place_finger(Instrumentation inst, long startTime, float x, float y) {
+        MotionEvent event = MotionEvent.obtain(startTime, SystemClock.uptimeMillis(), MotionEvent.ACTION_DOWN, x, y, 0 );
+        inst.sendPointerSync(event);
+    }
+
+    private void simulate_move_finger(Instrumentation inst, long startTime, float x, float y) {
+        MotionEvent event = MotionEvent.obtain(startTime, SystemClock.uptimeMillis(), MotionEvent.ACTION_MOVE, x, y, 0 );
+        inst.sendPointerSync(event);
+    }
+
+    private void simulate_remove_finger(Instrumentation inst, long startTime, float x, float y) {
+        MotionEvent event = MotionEvent.obtain(startTime, SystemClock.uptimeMillis(), MotionEvent.ACTION_UP, x, y, 0 );
+        inst.sendPointerSync(event);
     }
 }

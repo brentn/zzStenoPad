@@ -45,9 +45,6 @@ public class StenoPad extends Activity implements StenoMachine.OnStrokeListener,
         translator = new Translator(StenoPad.this);
         // register listeners
         dictionary.setOnDictionaryLoadedListener(this);
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
-        registerReceiver(mUsbReceiver, filter);
         // add soft-keyboard until hardware keyboard is plugged in
         ViewGroup parent = (ViewGroup) main_view.getParent();
         keyboard = (TouchLayer) getLayoutInflater().inflate(R.layout.keyboard, parent, false);
@@ -73,12 +70,19 @@ public class StenoPad extends Activity implements StenoMachine.OnStrokeListener,
                 }
             }
         }
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
+        registerReceiver(mUsbReceiver, filter);
+
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        unregisterReceiver(mUsbReceiver);
     }
+
+
 
 
     @Override

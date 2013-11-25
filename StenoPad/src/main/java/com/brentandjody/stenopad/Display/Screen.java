@@ -23,13 +23,11 @@ public class Screen extends DisplayDevice implements DisplayDevice.Display {
     public void update(DisplayItem item, String preview_text) {
         //append main_text to main, replace preview with preview_text
         if (main.length() > 0 && item.getBackspaces() > 0) {
-            String current_text = "";
-            int new_length=0;
-            if (main.getText() != null) {
-                current_text = main.getText().toString();
-                new_length = current_text.length();
-            }
-            main.setText(current_text.substring(0, new_length-1));
+            int new_length = main.length()-item.getBackspaces();
+            if (new_length > 0 && new_length < main.length())
+                main.setText(main.getText().subSequence(0, new_length));
+            else if (new_length == 0)
+                main.setText("");
         }
         main.append(item.getText());
         preview.setText(preview_text);
@@ -62,6 +60,11 @@ public class Screen extends DisplayDevice implements DisplayDevice.Display {
             y -= line_height;
         }
         return new Point(x, y);
+    }
+
+    public String getText() {
+        if (main.getText()==null) return "";
+        return main.getText().toString();
     }
 
 }
