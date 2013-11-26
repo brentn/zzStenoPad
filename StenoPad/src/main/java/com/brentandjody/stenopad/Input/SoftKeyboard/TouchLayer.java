@@ -33,7 +33,8 @@ public class TouchLayer extends LinearLayout {
 
     private List<TextView> keys = new ArrayList<TextView>();
     private boolean loading;
-    private Path[] path = new Path[NUMBER_OF_FINGERS];
+    private Path[] paths = new Path[NUMBER_OF_FINGERS];
+    private int[] fingerIds = new int[NUMBER_OF_FINGERS];
 
     public TouchLayer(Context context) {
         super(context);
@@ -78,9 +79,14 @@ public class TouchLayer extends LinearLayout {
         if (loading) LOADING_SPINNER.setVisibility(VISIBLE);
         else {
             LOADING_SPINNER.setVisibility(INVISIBLE);
-            for (int i=0; i<NUMBER_OF_FINGERS; i++) {
-                canvas.drawPath(path[i], PAINT);
-            }
+        }
+    }
+
+    @Override
+    protected void dispatchDraw(Canvas canvas) {
+        super.dispatchDraw(canvas);
+        for (int i=0; i<NUMBER_OF_FINGERS; i++) {
+            canvas.drawPath(paths[i], PAINT);
         }
     }
 
@@ -90,29 +96,35 @@ public class TouchLayer extends LinearLayout {
         int i;
         switch (event.getActionMasked()) {
             case MotionEvent.ACTION_DOWN: case MotionEvent.ACTION_POINTER_DOWN: {
-                i = event.getPointerId(event.getActionIndex());
-                if (i > NUMBER_OF_FINGERS) break;
+                i = event.getActionIndex();
+                if (i >= NUMBER_OF_FINGERS) break;
                 x = event.getX(i);
                 y = event.getY(i);
-                path[i].reset();
-                path[i].moveTo(x, y);
+                fingerIds[i] = event.getPointerId(i);
+                paths[i].reset();
+                paths[i].moveTo(x, y);
                 toggleKeyAt(x, y);
                 break;
             }
             case MotionEvent.ACTION_MOVE: {
                 selectKeys(event);
-                //invalidate();
+                invalidate();
                 break;
             }
             case MotionEvent.ACTION_UP: case MotionEvent.ACTION_POINTER_UP: {
-                i = event.getPointerId(event.getActionIndex());
-                if (i > NUMBER_OF_FINGERS) break;
-                if (i == 0) { //TODO: only complete if keys are selected
+                i = event.getActionIndex();
+                if (i >= NUMBER_OF_FINGERS) break;
+                int count = event.getPointerCount();
+                if (count == 1) { //TODO: only complete if keys are selected
                     if (anyKeysSelected()) {
                         onStrokeCompleteListener.onStrokeComplete(getStroke());
                     }
                 }
-                path[i].reset();
+                for (int n=0; n<NUMBER_OF_FINGERS; n++) {
+                    if (event.getPointerId(i) == fingerIds[n]) {
+                        paths[n].reset();
+                    }
+                }
                 break;
             }
         }
@@ -156,7 +168,7 @@ public class TouchLayer extends LinearLayout {
         loading=true;
         setWillNotDraw(false);
         for (int x=0; x<NUMBER_OF_FINGERS; x++) {
-            path[x] = new Path();
+            paths[x] = new Path();
         }
         PAINT = new Paint();
          if (getResources() != null)
@@ -211,13 +223,20 @@ public class TouchLayer extends LinearLayout {
     private void selectKeys(MotionEvent e) {
         Point pointer = new Point();
         Point offset = getScreenOffset(this);
-        int i = e.getActionIndex();
-        for (int n=0; n<e.getHistorySize(); n++) {
-            pointer.set((int)e.getHistoricalX(i, n)+offset.x, (int)e.getHistoricalY(i, n)+offset.y);
-            path[i].lineTo(e.getHistoricalX(i, n), e.getHistoricalY(i, n));
-            for (TextView key : keys) {
-                if (pointerOnKey(pointer, key)) {
-                    key.setSelected(true);
+        for (int i=0; i< e.getPointerCount(); i++) {
+            if (i < NUMBER_OF_FINGERS) {
+                for (int h=0; h<e.getHistorySize(); h++) {
+                    pointer.set((int) e.getHistoricalX(i, h)+offset.x, (int) e.getHistoricalY(i, h)+offset.y);
+                    if (paths[i].isEmpty()) {
+                        paths[i].moveTo(e.getHistoricalX(i, h), e.getHistoricalY(i, h));
+                    } else {
+                        paths[i].lineTo(e.getHistoricalX(i, h), e.getHistoricalY(i, h));
+                    }
+                    for (TextView key : keys) {
+                        if (pointerOnKey(pointer, key)) {
+                            key.setSelected(true);
+                        }
+                    }
                 }
             }
         }
@@ -243,8 +262,9 @@ public class TouchLayer extends LinearLayout {
         for (String key : keystring.split("/")) {
             findViewsWithText(keyViews, key.replace("-",""), FIND_VIEWS_WITH_TEXT);
             for (View keyView : keys) {
-                if (((TextView) keyView).getHint().toString().equals(key))
-                    keyView.setSelected(true);
+                if (((TextView) keyView).getHint()!=null)
+                    if (((TextView) keyView).getHint().toString().equals(key))
+                        keyView.setSelected(true);
             }
         }
         onStrokeCompleteListener.onStrokeComplete(getStroke());

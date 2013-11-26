@@ -17,6 +17,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.Set;
@@ -47,12 +48,15 @@ public class StenoPad extends Activity implements StenoMachine.OnStrokeListener,
         dictionary.setOnDictionaryLoadedListener(this);
         // add soft-keyboard until hardware keyboard is plugged in
         ViewGroup parent = (ViewGroup) main_view.getParent();
-        keyboard = (TouchLayer) getLayoutInflater().inflate(R.layout.keyboard, parent, false);
-        ViewGroup.LayoutParams layout = keyboard.getLayoutParams();
-        addContentView(keyboard, layout);
-        keyboard.setLoading();
-        keyboard.setOnStrokeCompleteListener(this);
-        findViewById(R.id.candidates_area).setVisibility(View.GONE);
+        LinearLayout softKbd = (LinearLayout) getLayoutInflater().inflate(R.layout.keyboard, parent, false);
+        if (softKbd != null) {
+            ViewGroup.LayoutParams layout = softKbd.getLayoutParams();
+            addContentView(softKbd, layout);
+            keyboard = (TouchLayer) findViewById(R.id.keyboard);
+            keyboard.setLoading();
+            keyboard.setOnStrokeCompleteListener(this);
+            findViewById(R.id.candidates_area).setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -61,7 +65,7 @@ public class StenoPad extends Activity implements StenoMachine.OnStrokeListener,
         Intent intent = getIntent();
         if (intent != null) {
             Log.d("onResume", "intent: " + intent.toString());
-            if (intent.getAction().equals(UsbManager.ACTION_USB_DEVICE_ATTACHED)) {
+            if (intent.getAction()!= null && intent.getAction().equals(UsbManager.ACTION_USB_DEVICE_ATTACHED)) {
                 UsbManager mUsbManager = (UsbManager)getSystemService(Context.USB_SERVICE);
                 if(mUsbManager == null) {
                     Log.d(TAG, "mUsbManager is null");
@@ -111,7 +115,7 @@ public class StenoPad extends Activity implements StenoMachine.OnStrokeListener,
     BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals(UsbManager.ACTION_USB_DEVICE_DETACHED)) {
+            if (intent.getAction() != null && intent.getAction().equals(UsbManager.ACTION_USB_DEVICE_DETACHED)) {
                 Log.d(TAG, "mUSBReceiver: received detached event");
             }
         }

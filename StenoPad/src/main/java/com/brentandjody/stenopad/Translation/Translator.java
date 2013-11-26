@@ -21,7 +21,7 @@ import java.util.concurrent.LinkedBlockingDeque;
 public class Translator {
 
     private static final int HISTORY_SIZE = 50;
-    public static boolean USE_SUFFIX_FOLDING = false;
+    public static boolean USE_SUFFIX_FOLDING = true;
     private static final Set<String> SUFFIX_KEYS = new HashSet<String>() {{
         add("-S"); add("-G"); add("-Z"); add("-D"); }};
 
