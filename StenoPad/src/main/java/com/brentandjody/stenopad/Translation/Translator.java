@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.Stack;
 import java.util.concurrent.LinkedBlockingDeque;
 
 /**
@@ -83,21 +84,26 @@ public class Translator {
                         history.add(translation);
                     } else { //still strokes in queue to try
                         // reduce the queue by one stroke, and try again
-                        Stroke lastStroke = strokeQ.removeLast();
-                        translate(lastStroke);
-                        if (!strokeQ.isEmpty()) { //last stroke was ambiguous
-                            full_stroke = Stroke.combine(strokesInQueue());
-                            definition = dictionary.forceLookup(full_stroke);
-                            if (definition != null) {
-                                translation = new Definition(full_stroke, definition);
-                            } else { // can't find in dictionary
-                                translation = new Definition(full_stroke, full_stroke);
-                            }
-                            play.add(translation);
-                            state = getStateFromHistory();
-                            history.add(translation);
-                            strokeQ.clear();
+                        Stack<Stroke> lastStrokes = new Stack<Stroke>();
+                        String firstStrokes = Stroke.combine(strokesInQueue());
+                        while (strokeQ.size() > 0 && dictionary.forceLookup(firstStrokes) == null) {
+                            lastStrokes.push(strokeQ.removeLast());
+                            firstStrokes = Stroke.combine(strokesInQueue());
                         }
+                        if (strokeQ.size()==0) { //nothing was found
+                            firstStrokes = "";
+                            while (!lastStrokes.empty()) firstStrokes += lastStrokes.pop().rtfcre()+"/";
+                            firstStrokes = firstStrokes.substring(0,firstStrokes.length()-1);
+                            translation = new Definition (firstStrokes, firstStrokes);
+                        } else {
+                            translation = new Definition(firstStrokes, dictionary.forceLookup(firstStrokes)); //translate the part we can
+                            strokeQ.clear();
+                            while (!lastStrokes.empty()) strokeQ.add(lastStrokes.pop()); //put the rest on the queue
+                        }
+                        play.add(translation);
+                        state = getStateFromHistory();
+                        history.add(translation);
+//
                         translate(s);
                     }
                 }
@@ -185,12 +191,15 @@ public class Translator {
     private String wordsInQueue() {
         String stroke = Stroke.combine(strokesInQueue());
         String result = dictionary.forceLookup(stroke);
-        if (result == null)
+        if (result == null) {
             if (stroke!=null) {
                 result = stroke;
             } else {
                 result = "";
             }
+        } else {
+            result = formatter.simpleFormat(result);
+        }
         return result;
     }
 
