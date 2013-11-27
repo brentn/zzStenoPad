@@ -10,7 +10,7 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.brentandjody.stenopad.R;
@@ -25,7 +25,7 @@ import java.util.List;
  * Created by brentn on 21/11/13.
  * Intercepts touches, and implements a dual-swipe-like interface for activating keys
  */
-public class TouchLayer extends LinearLayout {
+public class TouchLayer extends RelativeLayout {
 
     private static final int NUMBER_OF_FINGERS=2;
     private static FrameLayout LOADING_SPINNER;
@@ -76,7 +76,8 @@ public class TouchLayer extends LinearLayout {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         if (LOADING_SPINNER == null) return;
-        if (loading) LOADING_SPINNER.setVisibility(VISIBLE);
+        if (loading)
+            LOADING_SPINNER.setVisibility(VISIBLE);
         else {
             LOADING_SPINNER.setVisibility(INVISIBLE);
         }
@@ -187,7 +188,6 @@ public class TouchLayer extends LinearLayout {
     private void enumerate_keys(View v) {
         keys.add((TextView) v.findViewById(R.id.num));
         keys.add((TextView) v.findViewById(R.id.S));
-        keys.add((TextView) v.findViewById(R.id.S2));
         keys.add((TextView) v.findViewById(R.id.T));
         keys.add((TextView) v.findViewById(R.id.K));
         keys.add((TextView) v.findViewById(R.id.P));

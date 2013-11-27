@@ -31,7 +31,7 @@ public class Formatter {
         for (Definition t : play) {
             String next_word = format(t, state);
             state=t.getFormatting();
-            if (state.isAttachedStart() && sb.length()>0) {
+            if (state.isAttachedStart() && sb.length()>0 && sb.charAt(sb.length()-1)==' ') {
                 sb.deleteCharAt(sb.length()-1); //erase a space from end
             }
             sb.append(next_word);
@@ -54,7 +54,7 @@ public class Formatter {
                 if (atom.equals("{|-}")) { formatting.setCapitalize().attachEnd(); atom=""; }
                 if (atom.equals("{>}")) { formatting.setLowercase().attachEnd(); atom=""; }
                 if (atom.equals("{^}")) { formatting.attachEnd().attachStart(); atom=""; }
-                if (atom.equals("{#Return}")) { sb.append("\n"); formatting.attachEnd(); atom=""; bs+=1; }
+                if (atom.equals("{#Return}")) { sb.append("\n"); atom=""; }
                 if (atom.equals("{#BackSpace}")) {backspaces++; bs-=1; formatting.attachEnd(); atom=""; }
                 if (SPECIAL_SUFFIXES.contains(atom)) { appendSuffix(sb, atom); formatting.attachStart(); atom=""; }
                 if (atom.length()>1 && atom.charAt(1) == '&') { formatting.setGlue(); atom = atom.replace("&", ""); }

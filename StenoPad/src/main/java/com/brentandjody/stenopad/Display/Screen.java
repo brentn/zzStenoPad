@@ -22,6 +22,7 @@ public class Screen extends DisplayDevice implements DisplayDevice.Display {
 
     public void update(DisplayItem item, String preview_text) {
         //append main_text to main, replace preview with preview_text
+        // Deal with backspaces first
         if (main.length() > 0 && item.getBackspaces() > 0) {
             int new_length = main.length()-item.getBackspaces();
             if (new_length > 0 && new_length < main.length())
