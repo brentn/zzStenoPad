@@ -8,10 +8,14 @@ import com.brentandjody.stenopad.Translation.Stroke;
 import com.brentandjody.stenopad.Translation.Translator;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.hardware.usb.UsbDevice;
+import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbManager;
 import android.os.Bundle;
 import android.util.Log;
@@ -20,6 +24,9 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 
@@ -70,6 +77,12 @@ public class StenoPad extends Activity implements StenoMachine.OnStrokeListener,
                 if(mUsbManager == null) {
                     Log.d(TAG, "mUsbManager is null");
                 } else {
+                    UsbDevice device = chooseUsbDevice(mUsbManager.getDeviceList().keySet());
+                    UsbDeviceConnection connection = mUsbManager.openDevice(device);
+                    Log.d(TAG, device.getDeviceClass() + ":"+device.getDeviceSubclass());
+                    switch (device.getDeviceProtocol()) {
+
+                    }
                     //TODO:registerMachine();
                 }
             }
@@ -120,5 +133,20 @@ public class StenoPad extends Activity implements StenoMachine.OnStrokeListener,
             }
         }
     };
+
+    private UsbDevice chooseUsbDevice(Collection<String> devices) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Select input device");
+        builder.setItems(devices.toArray(new String[devices.size()]), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+        AlertDialog alert = builder.create();
+        alert.show();
+        //TODO: just return something for now
+        return null;
+    }
 
 }

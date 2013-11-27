@@ -116,6 +116,8 @@ public class TouchLayer extends LinearLayout {
                 if (i >= NUMBER_OF_FINGERS) break;
                 int count = event.getPointerCount();
                 if (count == 1) { //TODO: only complete if keys are selected
+                    paths[0].reset();
+                    invalidate();
                     if (anyKeysSelected()) {
                         onStrokeCompleteListener.onStrokeComplete(getStroke());
                     }
@@ -123,6 +125,7 @@ public class TouchLayer extends LinearLayout {
                 for (int n=0; n<NUMBER_OF_FINGERS; n++) {
                     if (event.getPointerId(i) == fingerIds[n]) {
                         paths[n].reset();
+                        invalidate();
                     }
                 }
                 break;
@@ -172,13 +175,13 @@ public class TouchLayer extends LinearLayout {
         }
         PAINT = new Paint();
          if (getResources() != null)
-            PAINT.setColor(getResources().getColor(android.R.color.holo_orange_light));
+            PAINT.setColor(getResources().getColor(android.R.color.background_light));
         else
             PAINT.setColor(Color.parseColor("#33B5E5"));
         PAINT.setStyle(Paint.Style.STROKE);
         PAINT.setStrokeJoin(Paint.Join.ROUND);
         PAINT.setStrokeCap(Paint.Cap.ROUND);
-        PAINT.setStrokeWidth(8);
+        PAINT.setStrokeWidth(6);
     }
 
     private void enumerate_keys(View v) {
