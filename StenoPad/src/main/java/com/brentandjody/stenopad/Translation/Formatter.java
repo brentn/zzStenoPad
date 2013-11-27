@@ -39,6 +39,11 @@ public class Formatter {
         return new DisplayItem(backspaces, sb.toString());
     }
 
+    public String simpleFormat(String input) {
+        Definition definition = new Definition("", input);
+        return format(definition, null);
+    }
+
     private String format(Definition definition, State priorState) {
         //decodes and updates formatting for definition
         State formatting = definition.getFormatting();
@@ -51,15 +56,19 @@ public class Formatter {
         int bs = 0;
         for (String atom : breakApart(definition.english())) {
             if (atom.charAt(0) == '{') {
-                if (atom.equals("{|-}")) { formatting.setCapitalize().attachEnd(); atom=""; }
+                if (atom.equals("{-|}")) { formatting.setCapitalize().attachEnd(); atom=""; }
                 if (atom.equals("{>}")) { formatting.setLowercase().attachEnd(); atom=""; }
                 if (atom.equals("{^}")) { formatting.attachEnd().attachStart(); atom=""; }
-                if (atom.equals("{#Return}")) { sb.append("\n"); atom=""; }
+                if (atom.equals("{#Return}")) { sb.append("\n"); formatting.attachEnd(); atom=""; }
                 if (atom.equals("{#BackSpace}")) {backspaces++; bs-=1; formatting.attachEnd(); atom=""; }
-                if (SPECIAL_SUFFIXES.contains(atom)) { appendSuffix(sb, atom); formatting.attachStart(); atom=""; }
-                if (atom.length()>1 && atom.charAt(1) == '&') { formatting.setGlue(); atom = atom.replace("&", ""); }
-                if (atom.length()>1 && atom.charAt(1) == '^') { appendSuffix(sb, atom); formatting.attachStart(); atom = ""; }
-                if (atom.length()>2 && atom.charAt(atom.length()-2) == '^') { formatting.attachEnd(); atom = atom.replace("^}", "}"); }
+                if (SPECIAL_SUFFIXES.contains(atom)) {
+                    appendSuffix(sb, atom); formatting.attachStart(); atom=""; }
+                if (atom.length()>1 && atom.charAt(1) == '&') {
+                    formatting.setGlue(); atom = atom.replace("&", ""); }
+                if (atom.length()>2 && atom.charAt(atom.length()-2) == '^') {
+                    formatting.attachEnd(); atom = atom.replace("^}", "}"); }
+                if (atom.length()>1 && atom.charAt(1) == '^') {
+                    appendSuffix(sb, atom); formatting.attachStart(); atom = atom.replace("{^","{"); }
             }
             atom = atom.replaceAll("[\\{\\}]", "");
             bs+=atom.length();
@@ -72,6 +81,7 @@ public class Formatter {
 
     private String applyFormatting(State priorFormat, State format, String s) {
         if ( s==null || s.isEmpty()) return "";
+        if (priorFormat==null) priorFormat = new State();
         StringBuilder sb = new StringBuilder();
         //deal with backspaces first
         if (format.isAttachedStart() || priorFormat.isAttachedEnd()

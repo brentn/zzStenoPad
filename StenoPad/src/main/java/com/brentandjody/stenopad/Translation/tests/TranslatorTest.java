@@ -105,6 +105,20 @@ public class TranslatorTest extends AndroidTestCase implements DisplayDevice.Dis
         assertEquals("avenueed ", text);
         translator.translate(new Stroke("AEPG"), this);
         assertEquals("appealing ", text);
+        // some difficult cases
+        translator.translate(new Stroke("S"), this);
+        assertEquals("", text);
+        assertEquals("is ", preview);
+        translator.translate(new Stroke("AUL"), this);
+        assertEquals("", text);
+        assertEquals("S/AUL", preview);
+        translator.translate(new Stroke("S-P"), this);
+        assertEquals("is all  ", text);
+        assertEquals("", preview);
+        translator.translate(new Stroke("TPAOEUPBD"), this);
+        assertEquals("find ", preview);
+        translator.translate(new Stroke("-G"), this);
+        assertEquals("finding ", text);
 
         //TODO: more testing
     }
