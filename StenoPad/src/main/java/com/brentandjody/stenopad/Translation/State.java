@@ -14,7 +14,9 @@ public class State {
     private int capitalization=NORMAL;
     private boolean attachStart=false;
     private boolean attachEnd=false;
+    // backspaces and replace together allow a stroke to be undone
     private int backspaces=0;
+    private String replay=null;
 
     public State() {
     }
@@ -43,6 +45,10 @@ public class State {
         backspaces+=x;
         return this;
     }
+    public State setReplay(String s) {
+        replay=s;
+        return this;
+    }
 
 
     public boolean hasGlue() {
@@ -63,4 +69,5 @@ public class State {
     public int getBackspaces() {
         return backspaces;
     }
+    public String getReplay() {if (replay==null) return ""; else return replay; }
 }

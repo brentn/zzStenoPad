@@ -2,9 +2,12 @@ package com.brentandjody.stenopad.Translation;
 
 import com.brentandjody.stenopad.Display.DisplayItem;
 
+import java.util.Deque;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Stack;
+import java.util.concurrent.LinkedBlockingDeque;
 
 /**
  * Created by brentn on 18/11/13.
@@ -16,22 +19,33 @@ public class Formatter {
     private static final HashSet<String> SPECIAL_SUFFIXES = new HashSet<String>()
     {{add("{^ly}");add("{^s}");add("{^y}");add("{^en}");add("{^ing}");add("{^ist}");add("{^ed}");}};
 
-    int backspaces;
+    int backspaces_to_send=0;
 
     public Formatter() {
     }
 
     public DisplayItem format(Iterable<Definition> undo, Iterable<Definition> play, State state) {
         //Process play - and produce a DisplayItem
-        backspaces = 0;
+        Stack<String> pre_play=null;
+        backspaces_to_send = 0;
+        String replay;
+        // total the backspaces required
         for (Definition t : undo) {
-            backspaces+=t.getFormatting().getBackspaces();
-            if (t.getFormatting().isAttachedStart())
-                backspaces--;
-            if (t.getFormatting().isAttachedEnd())
-                backspaces--;
+            backspaces_to_send+=t.getFormatting().getBackspaces();
+            replay = t.getFormatting().getReplay();
+            if (!replay.isEmpty()) {
+                if (pre_play==null) pre_play = new Stack<String>();
+                pre_play.push(replay);
+            }
         }
+        // play the "replay" text to complete the undo
         StringBuilder sb = new StringBuilder();
+        if (pre_play!=null) {
+            for (String s : pre_play) {
+                sb.append(s);
+            }
+        }
+        // add new text
         for (Definition t : play) {
             String next_word = format(t, state);
             state=t.getFormatting();
@@ -40,10 +54,11 @@ public class Formatter {
             }
             sb.append(next_word);
         }
-        return new DisplayItem(backspaces, sb.toString());
+        return new DisplayItem(backspaces_to_send, sb.toString());
     }
 
     public String simpleFormat(String input) {
+        // apply formatting rules with no prior state (good for preview text)
         Definition definition = new Definition("", input);
         return format(definition, null);
     }
@@ -51,49 +66,56 @@ public class Formatter {
     private String format(Definition definition, State priorState) {
         //decodes and updates formatting for definition
         State formatting = definition.getFormatting();
+        // when there is no english
         if (definition.english() == null) {
             formatting.addBackspaces(definition.rtfcre().length()+1);
             definition.setFormatting(formatting);
             return definition.rtfcre()+" ";
         }
         StringBuilder sb = new StringBuilder();
-        int bs = 0;
-        int old_length;
+
         for (String atom : breakApart(definition.english())) {
             if (atom.charAt(0) == '{') {
-                if (atom.equals("{-|}")) { formatting.setCapitalize().attachEnd(); atom=""; }
-                if (atom.equals("{>}")) { formatting.setLowercase().attachEnd(); atom=""; }
-                if (atom.equals("{^}")) { formatting.attachEnd().attachStart(); atom=""; }
+                if (atom.equals("{-|}")) {
+                    formatting.setCapitalize().attachEnd().addBackspaces(-4); atom=""; }
+                if (atom.equals("{>}")) {
+                    formatting.setLowercase().attachEnd().addBackspaces(-3); atom=""; }
+                if (atom.equals("{^}")) {
+                    formatting.attachEnd().attachStart().addBackspaces(-3); atom=""; }
                 if (atom.equals("{#Return}")) {
-                    sb.append("\n "); formatting.attachEnd(); bs+=1; atom=""; }
-                if (atom.equals("{#BackSpace}")) {backspaces++; bs-=1; formatting.attachEnd(); atom=""; }
+                    sb.append("\n ");
+                    formatting.attachEnd().addBackspaces(-8).setReplay(atom);
+                    atom=""; }
+                if (atom.equals("{#BackSpace}")) {
+                    backspaces_to_send++;
+                    formatting.attachEnd().addBackspaces(-10).setReplay(atom);
+                    atom=""; }
                 if ((!atom.isEmpty()) && SPECIAL_SUFFIXES.contains(atom)) {
-                    old_length = sb.length();
+                    formatting.addBackspaces(-atom.length()).setReplay(atom);
                     appendSuffix(sb, atom);
-                    bs += sb.length()-old_length;
-                    formatting.attachStart();
+                    formatting.addBackspaces(sb.length()).attachStart();
                     atom=""; }
                 if (atom.length()>1 && atom.charAt(1) == '&') {
-                    formatting.setGlue(); atom = atom.replace("&", ""); }
+                    formatting.setGlue().addBackspaces(-3);
+                    atom = atom.replace("{&", "").replace("}",""); }
                 if (atom.length()>2 && atom.charAt(atom.length()-2) == '^') {
-                    formatting.attachEnd(); atom = atom.replace("^}", "}"); }
+                    formatting.attachEnd().addBackspaces(-1);
+                    atom = atom.replace("^}", "}"); }
                 if (atom.length()>1 && atom.charAt(1) == '^') {
-                    old_length = sb.length();
+                    formatting.addBackspaces(-atom.length()).setReplay(atom);
                     appendSuffix(sb, atom);
-                    if (sb.length()==old_length) {
-                        atom = atom.replace("{^", "");
-                    } else {
-                        bs += sb.length()-old_length;
-                        atom="";
-                    }
-                    formatting.attachStart(); }
+                    formatting.addBackspaces(sb.length()).attachStart();
+                    atom = "";}
             }
-            atom = atom.replaceAll("[\\{\\}]", "");
-            bs+=atom.length();
-            sb.append(atom);
+            if (!atom.isEmpty()) {
+                if (atom.contains("{")||atom.contains("}")) {
+                    formatting.addBackspaces(atom.length()).setReplay(atom);
+                    atom = atom.replaceAll("[\\{\\}]", "");
+                }
+                sb.append(atom);
+            }
         }
-        formatting.addBackspaces(bs);
-        definition.setFormatting(formatting);
+//dont think I need this        definition.setFormatting(formatting);
         return applyFormatting(priorState, formatting, sb.toString());
     }
 
@@ -105,7 +127,7 @@ public class Formatter {
         if (format.isAttachedStart() || priorFormat.isAttachedEnd()
             || (priorFormat.hasGlue() && format.hasGlue())) {
             format.addBackspaces(-1);
-            backspaces++;
+            backspaces_to_send++;
         }
         //deal with capitiaization
         if (priorFormat.isCapitalized()) {

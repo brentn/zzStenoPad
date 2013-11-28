@@ -21,6 +21,8 @@ public class Definition {
         strokes = Stroke.separate(outlineString);
         english = translation;
         formatting = new State();
+        if (translation!=null)
+            formatting.addBackspaces(translation.length());
     }
 
     public Definition(Stroke[] outline, String translation) {
@@ -29,6 +31,8 @@ public class Definition {
         strokes = outline;
         english = translation;
         formatting = new State();
+        if (translation!=null)
+            formatting.addBackspaces(translation.length());
     }
 
     public Stroke[] strokes() {

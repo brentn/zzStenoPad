@@ -40,45 +40,45 @@ public class FormatterTest extends AndroidTestCase{
         State state = new State();
         assertNotNull(state);
         // plain word
-        DisplayItem result = formatter.format(none, makeTranslation("All"), state);
+        DisplayItem result = formatter.format(none, makeDefinition("All"), state);
         checkResult(result, 0, "All ");
 
         // undo
-        List<Definition> t1 = makeTranslation("over");
+        List<Definition> t1 = makeDefinition("over");
         result = formatter.format(none, t1, state);
         checkResult(result, 0, "over ");
         assertEquals(5, t1.get(0).getFormatting().getBackspaces());
         assertFalse(t1.get(0).getFormatting().isCapitalized());
 
         //capitalization
-        List<Definition> t2 = makeTranslation("{-|}");
+        List<Definition> t2 = makeDefinition("{-|}");
         result = formatter.format(t1, t2, state);
         checkResult(result, 5, "");
         assertTrue(t2.get(0).getFormatting().isCapitalized());
         state.setCapitalize();
-        result = formatter.format(none, makeTranslation("western"), state);
+        result = formatter.format(none, makeDefinition("western"), state);
         checkResult(result, 0, "Western ");
         state.setLowercase();
-        result = formatter.format(none, makeTranslation("Brent"), state);
+        result = formatter.format(none, makeDefinition("Brent"), state);
         checkResult(result, 0, "brent ");
 
         //attachment
         state.attachEnd();
-        result = formatter.format(none, makeTranslation("ararat"), state);
+        result = formatter.format(none, makeDefinition("ararat"), state);
         checkResult(result,1 , "ararat ");
         state.attachStart();
-        result = formatter.format(none, makeTranslation("Bob Marley"), state);
+        result = formatter.format(none, makeDefinition("Bob Marley"), state);
         checkResult(result, 1, "bob Marley ");
-        t1 = makeTranslation("twinkle");
+        t1 = makeDefinition("twinkle");
         t1.get(0).getFormatting().attachStart();
         state = new State();
         result = formatter.format(none, t1, state);
         checkResult(result, 1, "twinkle ");
-        t1 = makeTranslation("left-handed");
+        t1 = makeDefinition("left-handed");
         state.setGlue();
         result = formatter.format(none, t1, state);
         checkResult(result, 0, "left-handed ");
-        t1 = makeTranslation("six-fingered");
+        t1 = makeDefinition("six-fingered");
         t1.get(0).getFormatting().setGlue();
         result = formatter.format(none, t1, state);
         checkResult(result, 1, "six-fingered ");
@@ -87,7 +87,7 @@ public class FormatterTest extends AndroidTestCase{
         checkResult(result, 0, "six-fingered ");
     }
 
-    private List<Definition> makeTranslation(String english) {
+    private List<Definition> makeDefinition(String english) {
         List<Definition> result = new LinkedList<Definition>();
         Stroke[] stroke = new Stroke("A").asArray();
         result.add(new Definition(stroke, english));
