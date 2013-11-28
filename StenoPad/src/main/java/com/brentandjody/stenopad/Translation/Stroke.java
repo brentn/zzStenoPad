@@ -78,7 +78,9 @@ public class Stroke {
                     rightSide=true;
                     keys.add("-"+input.charAt(i));
                     break;
-                case 'K':case 'W':case 'H':case 'A':case 'O':
+                case 'A':case 'O':
+                    rightSide=true;
+                case 'K':case 'W':case 'H':
                     //keys that only exist on the left side
                     keys.add(input.charAt(i)+"-");
                     if ((i < (input.length()-1)) && (input.charAt(i+1) == '-') && (!single_hyphen))

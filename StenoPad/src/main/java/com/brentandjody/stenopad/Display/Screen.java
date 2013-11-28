@@ -27,7 +27,7 @@ public class Screen extends DisplayDevice implements DisplayDevice.Display {
             int new_length = main.length()-item.getBackspaces();
             if (new_length > 0 && new_length < main.length())
                 main.setText(main.getText().subSequence(0, new_length));
-            else if (new_length == 0)
+            else if (new_length <= 0)
                 main.setText("");
         }
         main.append(item.getText());

@@ -26,6 +26,10 @@ public class Formatter {
         backspaces = 0;
         for (Definition t : undo) {
             backspaces+=t.getFormatting().getBackspaces();
+            if (t.getFormatting().isAttachedStart())
+                backspaces--;
+            if (t.getFormatting().isAttachedEnd())
+                backspaces--;
         }
         StringBuilder sb = new StringBuilder();
         for (Definition t : play) {
@@ -54,21 +58,35 @@ public class Formatter {
         }
         StringBuilder sb = new StringBuilder();
         int bs = 0;
+        int old_length;
         for (String atom : breakApart(definition.english())) {
             if (atom.charAt(0) == '{') {
                 if (atom.equals("{-|}")) { formatting.setCapitalize().attachEnd(); atom=""; }
                 if (atom.equals("{>}")) { formatting.setLowercase().attachEnd(); atom=""; }
                 if (atom.equals("{^}")) { formatting.attachEnd().attachStart(); atom=""; }
-                if (atom.equals("{#Return}")) { sb.append("\n"); formatting.attachEnd(); atom=""; }
+                if (atom.equals("{#Return}")) {
+                    sb.append("\n "); formatting.attachEnd(); bs+=1; atom=""; }
                 if (atom.equals("{#BackSpace}")) {backspaces++; bs-=1; formatting.attachEnd(); atom=""; }
-                if (SPECIAL_SUFFIXES.contains(atom)) {
-                    appendSuffix(sb, atom); formatting.attachStart(); atom=""; }
+                if ((!atom.isEmpty()) && SPECIAL_SUFFIXES.contains(atom)) {
+                    old_length = sb.length();
+                    appendSuffix(sb, atom);
+                    bs += sb.length()-old_length;
+                    formatting.attachStart();
+                    atom=""; }
                 if (atom.length()>1 && atom.charAt(1) == '&') {
                     formatting.setGlue(); atom = atom.replace("&", ""); }
                 if (atom.length()>2 && atom.charAt(atom.length()-2) == '^') {
                     formatting.attachEnd(); atom = atom.replace("^}", "}"); }
                 if (atom.length()>1 && atom.charAt(1) == '^') {
-                    appendSuffix(sb, atom); formatting.attachStart(); atom = atom.replace("{^","{"); }
+                    old_length = sb.length();
+                    appendSuffix(sb, atom);
+                    if (sb.length()==old_length) {
+                        atom = atom.replace("{^", "");
+                    } else {
+                        bs += sb.length()-old_length;
+                        atom="";
+                    }
+                    formatting.attachStart(); }
             }
             atom = atom.replaceAll("[\\{\\}]", "");
             bs+=atom.length();
@@ -86,6 +104,7 @@ public class Formatter {
         //deal with backspaces first
         if (format.isAttachedStart() || priorFormat.isAttachedEnd()
             || (priorFormat.hasGlue() && format.hasGlue())) {
+            format.addBackspaces(-1);
             backspaces++;
         }
         //deal with capitiaization

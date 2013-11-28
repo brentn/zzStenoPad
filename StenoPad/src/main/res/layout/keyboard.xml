@@ -5,8 +5,7 @@
     android:layout_height="fill_parent"
     android:clickable="true"
     android:baselineAligned="false"
-    android:gravity="bottom"
-    android:id="@+id/touch_layer">
+    android:gravity="bottom">
 
     <RelativeLayout
         android:layout_height="180dp"
@@ -55,7 +54,7 @@
                     android:orientation="vertical"
                     android:layout_width="0dp"
                     android:layout_height="fill_parent"
-                    android:layout_weight=".5"
+                    android:layout_weight=".7"
                     android:id="@+id/left_bank">
 
                     <TextView
@@ -487,8 +486,8 @@
                     android:orientation="vertical"
                     android:layout_width="0dp"
                     android:layout_height="fill_parent"
-                    android:layout_weight=".5"
-                    android:id="@+id/right_bank">
+                    android:id="@+id/right_bank"
+                    android:layout_weight=".7">
 
                     <TextView
                         android:layout_width="fill_parent"

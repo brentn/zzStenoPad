@@ -82,7 +82,7 @@ public class TranslatorTest extends AndroidTestCase implements DisplayDevice.Dis
         assertEquals("AD", preview);
         translator.translate(new Stroke("R-R"), this);
         assertEquals(0, backspaces);
-        assertEquals("AD \n", text);
+        assertEquals("AD \n ", text);
         assertEquals("", preview);
         translator.translate(new Stroke("AD"), this);
         assertEquals(0, backspaces);
@@ -113,7 +113,7 @@ public class TranslatorTest extends AndroidTestCase implements DisplayDevice.Dis
         assertEquals("", text);
         assertEquals("S/AUL", preview);
         translator.translate(new Stroke("S-P"), this);
-        assertEquals("is all  ", text);
+        assertEquals("is all ", text);
         assertEquals("", preview);
         translator.translate(new Stroke("TPAOEUPBD"), this);
         assertEquals("find ", preview);

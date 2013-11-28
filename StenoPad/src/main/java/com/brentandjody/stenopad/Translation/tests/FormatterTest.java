@@ -51,7 +51,7 @@ public class FormatterTest extends AndroidTestCase{
         assertFalse(t1.get(0).getFormatting().isCapitalized());
 
         //capitalization
-        List<Definition> t2 = makeTranslation("{|-}");
+        List<Definition> t2 = makeTranslation("{-|}");
         result = formatter.format(t1, t2, state);
         checkResult(result, 5, "");
         assertTrue(t2.get(0).getFormatting().isCapitalized());

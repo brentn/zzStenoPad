@@ -1,18 +1,14 @@
 package com.brentandjody.stenopad.Input.Tests;
 
-import android.app.Instrumentation;
 import android.content.Context;
 import android.test.AndroidTestCase;
-import android.test.InstrumentationTestCase;
 import android.view.LayoutInflater;
-import android.widget.TextView;
+import android.widget.LinearLayout;
 
 import com.brentandjody.stenopad.Input.SoftKeyboard.TouchLayer;
 import com.brentandjody.stenopad.R;
 import com.brentandjody.stenopad.Translation.Stroke;
 
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by brentn on 24/11/13.
@@ -27,7 +23,8 @@ public class SoftKeyboardTest extends AndroidTestCase implements TouchLayer.OnSt
         super.setUp();
         context = getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
-        keyboard = (TouchLayer) inflater.inflate(R.layout.keyboard, null);
+        LinearLayout ll = (LinearLayout) inflater.inflate(R.layout.keyboard, null);
+        keyboard = (TouchLayer) ll.findViewById(R.id.keyboard);
     }
 
     public void testSetStrokesByString() throws Exception {
