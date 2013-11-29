@@ -128,14 +128,14 @@ public class TranslatorTest extends AndroidTestCase implements DisplayDevice.Dis
         translator.translate(new Stroke("-F"), this);
         assertEquals("of ", text);
         translator.translate(new Stroke("*"), this);
-        assertEquals(6, backspaces);
+        assertEquals(7, backspaces);
         assertEquals("ly ", text);
         translator.translate(new Stroke("*"), this);
-        assertEquals(7, backspaces);
+        assertEquals(8, backspaces);
         assertEquals("", preview);
         assertEquals("pail ", text);
         translator.translate(new Stroke("*"), this);
-        assertEquals(9, backspaces);
+        assertEquals(10, backspaces);
         assertEquals("ing ", text);
 
 

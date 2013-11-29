@@ -2,12 +2,10 @@ package com.brentandjody.stenopad.Translation;
 
 import com.brentandjody.stenopad.Display.DisplayItem;
 
-import java.util.Deque;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
-import java.util.concurrent.LinkedBlockingDeque;
 
 /**
  * Created by brentn on 18/11/13.
@@ -38,13 +36,7 @@ public class Formatter {
                 pre_play.push(replay);
             }
         }
-        // play the "replay" text to complete the undo
         StringBuilder sb = new StringBuilder();
-//        if (pre_play!=null) {
-//            for (String s : pre_play) {
-//                sb.append(simpleFormat(s));
-//            }
-//        }
         // add new text
         for (Definition t : play) {
             String next_word = format(t, state);
@@ -83,8 +75,8 @@ public class Formatter {
                 if (atom.equals("{^}")) {
                     formatting.attachEnd().attachStart().addBackspaces(-3); atom=""; }
                 if (atom.equals("{#Return}")) {
-                    sb.append("\n ");
-                    formatting.attachEnd().addBackspaces(-8).setReplay(atom);
+                    sb.append("\n");
+                    formatting.addBackspaces(-8).setReplay(atom);
                     atom=""; }
                 if (atom.equals("{#BackSpace}")) {
                     backspaces_to_send++;
@@ -93,7 +85,7 @@ public class Formatter {
                 if ((!atom.isEmpty()) && SPECIAL_SUFFIXES.contains(atom)) {
                     formatting.addBackspaces(-atom.length()).setReplay(atom);
                     appendSuffix(sb, atom);
-                    formatting.addBackspaces(sb.length()).attachStart();
+                    formatting.addBackspaces(sb.length()+1).attachStart();
                     atom=""; }
                 if (atom.length()>1 && atom.charAt(1) == '&') {
                     formatting.setGlue().addBackspaces(-3);
@@ -104,7 +96,7 @@ public class Formatter {
                 if (atom.length()>1 && atom.charAt(1) == '^') {
                     formatting.addBackspaces(-atom.length()).setReplay(atom);
                     appendSuffix(sb, atom);
-                    formatting.addBackspaces(sb.length()).attachStart();
+                    formatting.addBackspaces(sb.length()+1).attachStart();
                     atom = "";}
             }
             if (!atom.isEmpty()) {
