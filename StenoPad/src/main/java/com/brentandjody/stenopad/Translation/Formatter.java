@@ -40,11 +40,11 @@ public class Formatter {
         }
         // play the "replay" text to complete the undo
         StringBuilder sb = new StringBuilder();
-        if (pre_play!=null) {
-            for (String s : pre_play) {
-                sb.append(s);
-            }
-        }
+//        if (pre_play!=null) {
+//            for (String s : pre_play) {
+//                sb.append(simpleFormat(s));
+//            }
+//        }
         // add new text
         for (Definition t : play) {
             String next_word = format(t, state);

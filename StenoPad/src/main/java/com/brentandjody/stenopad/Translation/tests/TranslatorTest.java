@@ -113,7 +113,7 @@ public class TranslatorTest extends AndroidTestCase implements DisplayDevice.Dis
         assertEquals("", text);
         assertEquals("S/AUL", preview);
         translator.translate(new Stroke("S-P"), this);
-        assertEquals("is all  ", text);
+        assertEquals("is all ", text);
         assertEquals("", preview);
         translator.translate(new Stroke("TPAOEUPBD"), this);
         assertEquals("find ", preview);
@@ -128,13 +128,15 @@ public class TranslatorTest extends AndroidTestCase implements DisplayDevice.Dis
         translator.translate(new Stroke("-F"), this);
         assertEquals("of ", text);
         translator.translate(new Stroke("*"), this);
-        assertEquals(3, backspaces);
+        assertEquals(6, backspaces);
         assertEquals("ly ", text);
         translator.translate(new Stroke("*"), this);
+        assertEquals(7, backspaces);
         assertEquals("", preview);
         assertEquals("pail ", text);
         translator.translate(new Stroke("*"), this);
-        assertEquals("", text);
+        assertEquals(9, backspaces);
+        assertEquals("ing ", text);
 
 
         //TODO: more testing
