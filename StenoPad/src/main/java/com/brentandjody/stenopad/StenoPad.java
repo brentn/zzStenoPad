@@ -8,26 +8,22 @@ import com.brentandjody.stenopad.Translation.Stroke;
 import com.brentandjody.stenopad.Translation.Translator;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.hardware.usb.UsbDevice;
-import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 import java.util.Set;
 
 
@@ -39,15 +35,18 @@ public class StenoPad extends Activity implements StenoMachine.OnStrokeListener,
     private Translator translator;
     private StenoMachine inputDevice;
     private Screen displayDevice;
+    private LinearLayout virtual_keyboard;
     private TouchLayer keyboard;
     private PendingIntent mPermissionIntent;
+    private UsbDevice usbDevice;
+    private TextView main_view;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // set up display device
         setContentView(R.layout.stenopad);
-        final TextView main_view = (TextView) findViewById(R.id.main_text);
+        main_view = (TextView) findViewById(R.id.main_text);
         final TextView preview = (TextView) findViewById(R.id.preview);
         displayDevice = new Screen(main_view, preview);
         // set up dictionary / translator
@@ -56,59 +55,52 @@ public class StenoPad extends Activity implements StenoMachine.OnStrokeListener,
         translator = new Translator(dictionary);
         // register listeners
         dictionary.setOnDictionaryLoadedListener(this);
-        // add soft-keyboard until hardware keyboard is plugged in
-        ViewGroup parent = (ViewGroup) main_view.getParent();
-        LinearLayout softKbd = (LinearLayout) getLayoutInflater().inflate(R.layout.keyboard, parent, false);
-        if (softKbd != null) {
-            ViewGroup.LayoutParams layout = softKbd.getLayoutParams();
-            addContentView(softKbd, layout);
-            keyboard = (TouchLayer) findViewById(R.id.keyboard);
-            keyboard.setLoading();
-            keyboard.setOnStrokeCompleteListener(this);
-            findViewById(R.id.candidates_area).setVisibility(View.GONE);
-        }
-        mPermissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_USB_PERMISSION), 0);
-        IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
-        registerReceiver(mUsbReceiver, filter);
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
+        // get the device that initiated the activity
         if (intent != null) {
             Log.d("onResume", "intent: " + intent.toString());
             if (intent.getAction()!= null && intent.getAction().equals(UsbManager.ACTION_USB_DEVICE_ATTACHED)) {
-                UsbManager mUsbManager = (UsbManager)getSystemService(Context.USB_SERVICE);
-                if(mUsbManager == null) {
-                    Log.d(TAG, "mUsbManager is null");
+                usbDevice = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
+                if (usbDevice == null) {
+                    Log.w(TAG, "Plugged in USB device not found");
                 }
+                Log.d(TAG, "UsbDevice: "+usbDevice.toString());
             }
         }
     }
+
     @Override
     protected void onResume() {
         super.onResume();
-        Intent intent = getIntent();
-        if (intent != null) {
-            Log.d("onResume", "intent: " + intent.toString());
-            if (intent.getAction()!= null && intent.getAction().equals(UsbManager.ACTION_USB_DEVICE_ATTACHED)) {
-                UsbManager mUsbManager = (UsbManager)getSystemService(Context.USB_SERVICE);
-                if(mUsbManager == null) {
-                    Log.d(TAG, "mUsbManager is null");
-                } else {
-                   // UsbDevice device = chooseUsbDevice(mUsbManager.getDeviceList().keySet());
-                   // UsbDeviceConnection connection = mUsbManager.openDevice(device);
-                  //  Log.d(TAG, device.getDeviceClass() + ":"+device.getDeviceSubclass());
-                  //  switch (device.getDeviceProtocol()) {
-
-                   // }
-                    //TODO:registerMachine();
-                }
+        // add soft-keyboard until/unless hardware keyboard is plugged in
+        if ( usbDevice == null ) {
+            if (virtual_keyboard == null) {
+                launchVirtualKeyboard();
+                // register receiver for usb attached event
+                try {unregisterReceiver(mUsbReceiver);} catch(Exception e){}
+                mPermissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_USB_PERMISSION), 0);
+                IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
+                registerReceiver(mUsbReceiver, filter);
             }
+        } else { // there is an external device
+            // remove any virtual keyboard
+            removeVirtualKeyboard();
+            // set up the connection
+            UsbManager mUsbManager = (UsbManager)getSystemService(Context.USB_SERVICE);
+            if(mUsbManager == null) {
+                Log.d(TAG, "mUsbManager is null");
+            } else {
+            }
+            // register receiver for unplug event
+            try {unregisterReceiver(mUsbReceiver);} catch(Exception e){}
+            IntentFilter filter = new IntentFilter();
+            filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
+            registerReceiver(mUsbReceiver, filter);
         }
-        IntentFilter filter = new IntentFilter();
-        //filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
-        //registerReceiver(mUsbReceiver, filter);
 
     }
 
@@ -116,7 +108,7 @@ public class StenoPad extends Activity implements StenoMachine.OnStrokeListener,
     @Override
     protected void onPause() {
         super.onPause();
-        unregisterReceiver(mUsbReceiver);
+        try {unregisterReceiver(mUsbReceiver);} catch(Exception e){}
     }
 
 
@@ -145,18 +137,46 @@ public class StenoPad extends Activity implements StenoMachine.OnStrokeListener,
         }
     }
 
+    private void launchVirtualKeyboard() {
+        ViewGroup parent = (ViewGroup) main_view.getParent();
+        virtual_keyboard = (LinearLayout) getLayoutInflater().inflate(R.layout.keyboard, parent, false);
+        if (virtual_keyboard != null) {
+            ViewGroup.LayoutParams layout = virtual_keyboard.getLayoutParams();
+            addContentView(virtual_keyboard, layout);
+            keyboard = (TouchLayer) findViewById(R.id.keyboard);
+            //TODO: replace this with non-virtualkbd specific one:
+            if (dictionary.isLoading()) {
+                keyboard.setLoading();
+            } else {
+                keyboard.clearLoading();
+            }
+            keyboard.setOnStrokeCompleteListener(this);
+            findViewById(R.id.candidates_area).setVisibility(View.GONE);
+            virtual_keyboard.startAnimation(AnimationUtils.loadAnimation(this, R.anim.slide_up));
+            parent.invalidate();
+        }
+    }
+
+    private void removeVirtualKeyboard() {
+        ViewGroup parent = (ViewGroup) virtual_keyboard.getParent();
+        if (virtual_keyboard != null) {
+            virtual_keyboard.startAnimation(AnimationUtils.loadAnimation(this, R.anim.slide_down));
+            if (virtual_keyboard.getParent().equals(parent)) {
+                ((FrameLayout)parent).removeView(virtual_keyboard);
+            }
+            keyboard = null;
+            virtual_keyboard = null;
+            parent.invalidate();
+        }
+    }
+
     private final BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (UsbManager.ACTION_USB_DEVICE_DETACHED.equals(action)) {
                 Log.d(TAG, "mUSBReceiver: received detached event");
-            }
-            if (UsbManager.ACTION_USB_DEVICE_ATTACHED.equals(action)) {
-                Log.d(TAG, "mUSBReceiver: device attached");
-            }
-            if (UsbManager.ACTION_USB_ACCESSORY_ATTACHED.equals(action)) {
-                Log.d(TAG, "mUSBReceiver: accessory attached");
+                launchVirtualKeyboard();
             }
             if (ACTION_USB_PERMISSION.equals(action)) {
                 synchronized (this) {

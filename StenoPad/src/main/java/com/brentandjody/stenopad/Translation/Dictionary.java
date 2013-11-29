@@ -25,14 +25,14 @@ public class Dictionary {
     private TST<String> dictionary;
     private final Context context;
     //private int longestStroke = 0;
-    private Boolean loading = false;
+    private boolean loading = false;
 
     public Dictionary(Context c) {
         context = c;
         dictionary = new TST<String>();
     }
 
-    public Boolean isLoading() {
+    public boolean isLoading() {
         return loading;
     }
 
