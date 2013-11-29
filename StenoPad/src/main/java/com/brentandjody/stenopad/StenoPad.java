@@ -9,6 +9,7 @@ import com.brentandjody.stenopad.Translation.Translator;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -32,12 +33,14 @@ import java.util.Set;
 
 public class StenoPad extends Activity implements StenoMachine.OnStrokeListener, TouchLayer.OnStrokeCompleteListener, Dictionary.OnDictionaryLoadedListener {
     private static final String TAG = "StenoPad";
+    private static final String ACTION_USB_PERMISSION = "com.brentandjody.stenopad.USB_PERMISSION";
 
     private Dictionary dictionary;
     private Translator translator;
     private StenoMachine inputDevice;
     private Screen displayDevice;
     private TouchLayer keyboard;
+    private PendingIntent mPermissionIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,8 +67,24 @@ public class StenoPad extends Activity implements StenoMachine.OnStrokeListener,
             keyboard.setOnStrokeCompleteListener(this);
             findViewById(R.id.candidates_area).setVisibility(View.GONE);
         }
+        mPermissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_USB_PERMISSION), 0);
+        IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
+        registerReceiver(mUsbReceiver, filter);
     }
 
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        if (intent != null) {
+            Log.d("onResume", "intent: " + intent.toString());
+            if (intent.getAction()!= null && intent.getAction().equals(UsbManager.ACTION_USB_DEVICE_ATTACHED)) {
+                UsbManager mUsbManager = (UsbManager)getSystemService(Context.USB_SERVICE);
+                if(mUsbManager == null) {
+                    Log.d(TAG, "mUsbManager is null");
+                }
+            }
+        }
+    }
     @Override
     protected void onResume() {
         super.onResume();
@@ -77,21 +96,22 @@ public class StenoPad extends Activity implements StenoMachine.OnStrokeListener,
                 if(mUsbManager == null) {
                     Log.d(TAG, "mUsbManager is null");
                 } else {
-                    UsbDevice device = chooseUsbDevice(mUsbManager.getDeviceList().keySet());
-                    UsbDeviceConnection connection = mUsbManager.openDevice(device);
-                    Log.d(TAG, device.getDeviceClass() + ":"+device.getDeviceSubclass());
-                    switch (device.getDeviceProtocol()) {
+                   // UsbDevice device = chooseUsbDevice(mUsbManager.getDeviceList().keySet());
+                   // UsbDeviceConnection connection = mUsbManager.openDevice(device);
+                  //  Log.d(TAG, device.getDeviceClass() + ":"+device.getDeviceSubclass());
+                  //  switch (device.getDeviceProtocol()) {
 
-                    }
+                   // }
                     //TODO:registerMachine();
                 }
             }
         }
         IntentFilter filter = new IntentFilter();
-        filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
-        registerReceiver(mUsbReceiver, filter);
+        //filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
+        //registerReceiver(mUsbReceiver, filter);
 
     }
+
 
     @Override
     protected void onPause() {
@@ -125,28 +145,34 @@ public class StenoPad extends Activity implements StenoMachine.OnStrokeListener,
         }
     }
 
-    BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
+    private final BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent.getAction() != null && intent.getAction().equals(UsbManager.ACTION_USB_DEVICE_DETACHED)) {
+            String action = intent.getAction();
+            if (UsbManager.ACTION_USB_DEVICE_DETACHED.equals(action)) {
                 Log.d(TAG, "mUSBReceiver: received detached event");
+            }
+            if (UsbManager.ACTION_USB_DEVICE_ATTACHED.equals(action)) {
+                Log.d(TAG, "mUSBReceiver: device attached");
+            }
+            if (UsbManager.ACTION_USB_ACCESSORY_ATTACHED.equals(action)) {
+                Log.d(TAG, "mUSBReceiver: accessory attached");
+            }
+            if (ACTION_USB_PERMISSION.equals(action)) {
+                synchronized (this) {
+                    UsbDevice device = (UsbDevice)intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
+
+                    if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
+                        if(device != null){
+                            ((UsbManager) getSystemService(Context.USB_SERVICE)).requestPermission(device, mPermissionIntent);//call method to set up device communication
+                        }
+                    }
+                    else {
+                        Log.d(TAG, "permission denied for device " + device);
+                    }
+                }
             }
         }
     };
-
-    private UsbDevice chooseUsbDevice(Collection<String> devices) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Select input device");
-        builder.setItems(devices.toArray(new String[devices.size()]), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-            }
-        });
-        AlertDialog alert = builder.create();
-        alert.show();
-        //TODO: just return something for now
-        return null;
-    }
 
 }
